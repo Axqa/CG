@@ -6,6 +6,7 @@
 #include "Objects3D/point3.h"
 #include "Objects3D/line3d.h"
 #include "styleloader.h"
+#include <QDebug>
 
 int main( int argc, char **argv ) {
     QApplication a( argc, argv );
@@ -31,6 +32,7 @@ int main( int argc, char **argv ) {
     scene->addObject(new Line3D({0,0,0}, {200,0,0}, QColor(Qt::green)));
     scene->addObject(new Line3D({0,0,0}, {0,200,0}, QColor(Qt::red)));
     scene->addObject(new Line3D({0,0,0}, {0,0,200}, QColor(Qt::blue)));
+
 
     return a.exec();
 }

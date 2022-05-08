@@ -122,6 +122,21 @@ public:
     /** @return A reference to this. */
     float3 &operator /=(float scalar);
 
+    /// Tests if the length of this vector is one, up to the given epsilon.
+    /** @see IsZero(), IsFinite(), IsPerpendicular(). */
+    bool IsNormalized(float epsilonSq = 1e-5f) const;
+
+    /// Returns a normalized copy of this vector.
+    /** @note If the vector is zero and cannot be normalized, the vector (1, 0, 0) is returned, and an error message is printed.
+            If you do not want to generate an error message on failure, but want to handle the failure yourself, use the
+            Normalize() function instead.
+        @see Normalize(). */
+    float3 Normalized() const;
+
+    /// Tests if this is the null vector, up to the given epsilon.
+    /** @see IsNormalized(), IsFinite(), IsPerpendicular(). */
+    bool IsZero(float epsilonSq = 1e-7f) const;
+
     /// Adds a vector to this vector. [IndexTitle: Add/Sub/Mul/Div]
     /// @return (x+v.x, y+v.y, z+v.z).
     float3 Add(const float3 &v) const { return *this + v; }

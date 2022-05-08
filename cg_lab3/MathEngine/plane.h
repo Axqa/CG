@@ -40,6 +40,10 @@ public:
 
 
     MatrixF ProjectionMatrix();
+
+private:
+    MatrixF projMatrix;
+    void CalculateProjMatrix();
 };
 
 #endif // PLANE_H

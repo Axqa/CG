@@ -42,4 +42,10 @@ FORCE_INLINE void SinCos(float angleRadians, float &outSin, float &outCos) {
     outCos = Cos(angleRadians);
 }
 
+template<typename T>
+FORCE_INLINE T Abs(const T &a)
+{
+    return a >= 0 ? a : -a;
+}
+
 #endif // SOMEMATH_H

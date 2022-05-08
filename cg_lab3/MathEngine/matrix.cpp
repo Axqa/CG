@@ -1,6 +1,6 @@
 #include "matrix.h"
 #include "somemath.h"
-
+#include <QDebug>
 
 
 template<typename T>
@@ -139,6 +139,7 @@ Matrix<T> Matrix<T>::operator -(const Matrix &oth)
 template<typename T>
 Matrix<T> Matrix<T>::operator *(const Matrix &oth)
 {
+//    qDebug() << "multiplying (" << rowCount<<colCount << ") on (" << oth.rowCount << oth.colCount << ")";
     massert(oth.rowCount == colCount, "ColCount must equal other.RowCount");
     Matrix<T> res(rowCount, oth.colCount);
 
@@ -147,7 +148,7 @@ Matrix<T> Matrix<T>::operator *(const Matrix &oth)
             T sum = 0;
 
             for ( u32 k = 0; k < oth.rowCount; k++ ) {
-                sum += at(j,k) * oth.at(k,j);
+                sum += at(i,k) * oth.at(k,j);
             }
             res.at(i,j) = sum;
         }
@@ -191,18 +192,22 @@ Matrix<T> &Matrix<T>::operator -=(const Matrix &oth)
 template<typename T>
 Matrix<T> &Matrix<T>::operator *=(const Matrix &oth)
 {
-    massert(oth.rowCount == colCount, "ColCount must equal other.RowCount");
+//    massert(oth.rowCount == colCount, "ColCount must equal other.RowCount");
 
-    for (u32 i = 0; i < rowCount; ++i) {
-        for (u32 j = 0; j < oth.colCount; ++j) {
-            T sum = 0;
+//    Matrix<T> res(rowCount, oth.colCount);
 
-            for ( u32 k = 0; k < oth.rowCount; k++ ) {
-                sum += at(j,k) * oth.at(k,j);
-            }
-            at(i,j) = sum;
-        }
-    }
+//    for (u32 i = 0; i < rowCount; ++i) {
+//        for (u32 j = 0; j < oth.colCount; ++j) {
+//            T sum = 0;
+
+//            for ( u32 k = 0; k < oth.rowCount; k++ ) {
+//                sum += at(j,k) * oth.at(k,j);
+//            }
+//            res.at(i,j) = sum;
+//        }
+//    }
+
+    operator= (*this * oth);
     return *this;
 }
 
@@ -226,6 +231,7 @@ T *Matrix<T>::operator[](u32 idx)
 template<typename T>
 T &Matrix<T>::at(u32 row, u32 col)
 {
+//    qDebug() << "dims:" << rowCount << colCount << "idx:" << row << col;
     massert(row < rowCount, "Row index out of range");
     massert(col < colCount, "Col index out of range");
 

@@ -7,6 +7,7 @@
 #include "scene3d.h"
 #include "../MathEngine/plane.h"
 #include "QGraphicsScene"
+#include "../customgraphicsscene.h"
 #include <QObject>
 
 class Camera : public QObject
@@ -25,7 +26,7 @@ public:
     Camera(Plane p);
     ~Camera();
 
-    QGraphicsScene* CameraView();
+    CustomGraphicsScene* CameraView();
     MatrixF ProjectOnScreen(Object3D *obj);
 
 public slots:

@@ -1,5 +1,6 @@
 #include "plane.h"
 #include "somemath.h"
+#include <QDebug>
 
 Plane::Plane()
 {
@@ -37,11 +38,38 @@ void Plane::Set(const float3 &point, const float3 &normal_)
 
 MatrixF Plane::ProjectionMatrix()
 {
-    float angleAroundX = 35.26439;
-    float angleAroundY = 45;
+//    float angleAroundX = 35.26439;
+//    float angleAroundY = 45;
 
-    MatrixF rotX = MatrixF::RotateX(ToRad(angleAroundX));
-    MatrixF rotY = MatrixF::RotateY(ToRad(angleAroundY));
+    CalculateProjMatrix();
+    return projMatrix;
+}
 
-    return rotY*rotX; // maybe *ProjectZ() // i still dont have ProjectZ()
+void Plane::CalculateProjMatrix()
+{
+    float angleAroundX = 0;
+    float angleAroundY = 0;
+
+//    qDebug() << "Normal: " << normal.x << normal.y << normal.z;
+
+    vec yz0 = normal; yz0.x = 0;
+    if (yz0.IsZero())
+        angleAroundX = 0;
+    else {
+        angleAroundX = yz0.AngleBetween({0,0,1});
+        if (normal.y < 0) angleAroundX *= -1;
+    }
+    vec xz0 = normal; xz0.y = 0;
+    if (xz0.IsZero())
+        angleAroundY = 0;
+    else {
+        angleAroundY = xz0.AngleBetween({0,0,1});
+        if (normal.x > 0) angleAroundY *= -1;
+
+    }
+//    qDebug() << "rot (arX, arY):" << angleAroundX << angleAroundY;
+    MatrixF rotX = MatrixF::RotateX(angleAroundX);
+    MatrixF rotY = MatrixF::RotateY(angleAroundY);
+
+    projMatrix = rotY*rotX;
 }

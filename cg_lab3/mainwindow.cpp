@@ -25,13 +25,19 @@ void MainWindow::init(Scene3D* scene) {
         mainCam = this->scene->cams[0];
         connect(mainCam, &Camera::ViewChanged, this, &MainWindow::UpdateView);
     }
+
+    ui->graphicsView->scale(1,-1);
+    ui->graphicsView->setRenderHint(QPainter::Antialiasing);
 }
 
 void MainWindow::UpdateView()
 {
 //    ui->graphicsView->viewport()->removeEventFilter(ui->graphicsView->scene());
-    delete ui->graphicsView->scene();
+    if (ui->graphicsView->scene())
+        ui->graphicsView->scene()->deleteLater();
     auto scene = (mainCam->CameraView());
     ui->graphicsView->setScene(scene);
+
+    ui->graphicsView->update();
 //    ui->graphicsView->viewport()->installEventFilter(scene);
 }

@@ -4,9 +4,11 @@
 #include "QGraphicsSceneMouseEvent"
 #include "QDebug"
 #include "QCoreApplication"
+#include "QPainter"
 
 CustomGraphicsScene::CustomGraphicsScene(QObject *parent) : QGraphicsScene(parent)
 {
+    setBackgroundBrush(QColor(192,192,192));
 //    qApp->installEventFilter(this);
 }
 
@@ -66,3 +68,5 @@ void CustomGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void CustomGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
 }
+
+

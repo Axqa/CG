@@ -1,5 +1,6 @@
 #include "float3.h"
 #include "somemath.h"
+#include <QDebug>
 
 float3::float3(float x_, float y_, float z_)
 :x(x_), y(y_), z(z_)
@@ -156,6 +157,16 @@ float3 &float3::operator *=(float scalar)
     return *this;
 }
 
+bool float3::IsNormalized(float epsilonSq) const
+{
+    return Abs(LengthSq()-1.f) <= epsilonSq;
+}
+
+bool float3::IsZero(float epsilonSq) const
+{
+    return LengthSq() <= epsilonSq;
+}
+
 float3 float3::Add(float scalar) const
 {
     return float3(x + scalar, y + scalar, z + scalar);
@@ -224,6 +235,16 @@ float float3::Normalize()
         Set(1.f, 0.f, 0.f); // We will always produce a normalized vector.
         return 0; // But signal failure, so user knows we have generated an arbitrary normalization.
     }
+}
+
+float3 float3::Normalized() const
+{
+
+    float3 copy = *this;
+    float oldLength = copy.Normalize();
+    assert(oldLength > 0.f && "float3::Normalized() failed!");
+    return copy;
+
 }
 
 void float3::Set(float x, float y, float z)

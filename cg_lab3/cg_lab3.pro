@@ -59,3 +59,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     cg_lab3.pro.user \
     style.qss
+
+RESOURCES += \
+    rsc.qrc
