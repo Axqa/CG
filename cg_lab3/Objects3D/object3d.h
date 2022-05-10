@@ -20,9 +20,13 @@ public:
     virtual void FromMatrix(MatrixF m ) = 0;
     virtual void Normalize() = 0;
 
+    /// Transform this object
     virtual void Transform(MatrixF m);
+    /// Returns matrix of transformed this
     virtual MatrixF MatrixTransform(MatrixF m);
 
+protected:
+    QGraphicsItem *itemOnScene = nullptr;
 
 signals:
     void ObjectChanged();

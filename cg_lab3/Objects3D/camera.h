@@ -14,8 +14,12 @@ class Camera : public QObject
 {
     Q_OBJECT
 public:
-    // maybe change on angle in camera and add width and height for screen
+    /// Center of all interaction. I.e. rotation around it.
     float3 camPoint;
+    /// Distance for perspective view
+    float camDist = 10;
+    /// Add perspectie view to proj matrix
+    bool addPerspective = false;
 
     Plane plane;
 
@@ -29,8 +33,15 @@ public:
     CustomGraphicsScene* CameraView();
     MatrixF ProjectOnScreen(Object3D *obj);
 
+private:
+    /// Creates ray through point according to [non-]perspective view
+    Ray CastRayFromPoint(QPointF point);
+
 public slots:
     void SceneChanged();
+    void mousePress(Qt::MouseButton btn, QPointF pos);
+    void mouseRelease(Qt::MouseButton btn);
+    void mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to);
 
 signals:
     void ViewChanged();

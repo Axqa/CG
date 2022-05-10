@@ -328,7 +328,32 @@ MatrixF Matrix<T>::RotateZ(float angle)
        {0,0,1,0},
        {0,0,0,1}
    });
-   return res;
+    return res;
+}
+
+/// Better not to call it for non-digit T
+template<typename T>
+Matrix<T> Matrix<T>::NormalizedW()
+{
+    massert(colCount == 4, "Must have 4 cols for Normalized4()");
+
+    Matrix res(rowCount, colCount);
+    for (u32 row = 0; row < rowCount; ++row) {
+        T w = (at(row,3));
+        T invW;
+        if (Abs(at(row,3)) > 1e-6f)
+        {
+            invW = 1 / w;
+        } else {
+            invW = 1;
+        }
+
+        res.at(row, 0) = at(row,0) * invW;
+        res.at(row, 1) = at(row,1) * invW;
+        res.at(row, 2) = at(row,2) * invW;
+        res.at(row, 3) = at(row,3) * invW;
+    }
+    return res;
 }
 
 template <typename T>

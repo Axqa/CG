@@ -1,6 +1,7 @@
 #include "point3.h"
 #include <QGraphicsEllipseItem>
 #include "../myassert.h"
+#include <QDebug>
 
 Point3::Point3()
 {
@@ -34,13 +35,15 @@ QGraphicsItemGroup* Point3::DrawOnCameraView(Camera &cam)
     float left = nPoint.pos.x - nPoint.rad;
     float top  = nPoint.pos.y - nPoint.rad;
 
-    QGraphicsEllipseItem *el = new QGraphicsEllipseItem(left, top, rad*2, rad*2);
+    QGraphicsEllipseItem *el = new QGraphicsEllipseItem(left, top, nPoint.rad*2, nPoint.rad*2);
 
     el->setPen(QColor(Qt::black));
     el->setBrush(color);
 
     QGraphicsItemGroup *group = new QGraphicsItemGroup();
     group->addToGroup(el);
+
+    itemOnScene = group;
 
     return group;
 }
@@ -65,5 +68,4 @@ void Point3::FromMatrix(MatrixF m)
 
 void Point3::Normalize()
 {
-
 }

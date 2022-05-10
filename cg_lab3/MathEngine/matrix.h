@@ -63,13 +63,21 @@ public:
     static Matrix<float> MoveBy(float dx, float dy, float dz);
 
     // angle in rad
+    /// Rotate CounterClockWise around X-axis on angle in rad
     static Matrix<float> RotateX(float angle);
+    /// Rotate CounterClockWise around Y-axis on angle in rad
     static Matrix<float> RotateY(float angle);
+    /// Rotate CounterClockWise around Z-axis on angle in rad
     static Matrix<float> RotateZ(float angle);
 
     // to have foreach-like loop
     decltype(data.begin()) begin() {return data.begin();};
     decltype(data.end()) end() {return data.end();};
+
+    /// Returns normalized rows by 4th column
+    /// Need to have 4 cols;
+    /// If W == 0, row stay unchanged
+    Matrix NormalizedW();
 
     friend std::ostream& operator<<  (std::ostream &out, const Matrix<> &m) ;
 };

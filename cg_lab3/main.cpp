@@ -33,6 +33,18 @@ int main( int argc, char **argv ) {
     scene->addObject(new Line3D({0,0,0}, {0,200,0}, QColor(Qt::red)));
     scene->addObject(new Line3D({0,0,0}, {0,0,200}, QColor(Qt::blue)));
 
+    scene->addObject(new Line3D(float3{1,0,0} * cam->plane.d,
+                                float3{0,1,0} * cam->plane.d));
+    scene->addObject(new Line3D(float3{0,1,0} * cam->plane.d,
+                                float3{0,0,1} * cam->plane.d));
+    scene->addObject(new Line3D(float3{0,0,1} * cam->plane.d,
+                                float3{1,0,0} * cam->plane.d));
 
+//    qDebug() << float3(1,0,0).AngleBetween({1,0,0});
+//    qDebug() << float3(1,0,0).AngleBetween({1,1,0});
+//    qDebug() << float3(1,0,0).AngleBetween({-1,1,0});
+//    qDebug() << float3(1,0,0).AngleBetween({-1,0,0});
+//    qDebug() << float3(1,0,0).AngleBetween({-1,-1,0});
+//    qDebug() << float3(1,0,0).AngleBetween({1,-1,0});
     return a.exec();
 }

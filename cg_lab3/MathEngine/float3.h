@@ -3,6 +3,7 @@
 
 #include "../commondec.h"
 #include "float2.h"
+#include <QDebug>
 
 class float3
 {
@@ -232,10 +233,26 @@ public:
     /// Computes the distance between this point and the given object.
     float Distance(const float3 &point) const;
 
+    /** This function computes two new vectors b and c which are both orthogonal to this vector and to each other.
+        That is, the set { this, b, c} is an orthogonal set. The vectors b and c that are outputted are also normalized.
+        @param outB [out] Receives vector b.
+        @param outC [out] Receives vector c.
+        @note When calling this function, this vector should not be zero! */
+    void PerpendicularBasis(float3 &outB, float3 &outC) const;
 
 
     /// Sets all elements of this vector.
     void Set(float x, float y, float z);
+
+    /// Rotates Counter-Clock WIse
+    void RotateAroundX(float angle);
+    void RotateAroundY(float angle);
+    void RotateAroundZ(float angle);
+
+    /// Return rotated CCW around normalized unit vector, on angle in rad
+    float3 RodriguesRotation(float3 unit, float angle);
+
+    operator QString() const { return "float3("+ QString::number(x)+", "+QString::number(y)+", "+QString::number(z)+")"; }
 };
 
 inline float Dot(const float3 &a, const float3 &b) { return a.Dot(b); }

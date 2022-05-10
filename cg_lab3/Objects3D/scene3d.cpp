@@ -32,4 +32,9 @@ void Scene3D::addCamera(Camera *cam)
     connect(this, &Scene3D::SceneChanged, cam, &Camera::SceneChanged);
 }
 
+QList<Object3D *> Scene3D::items()
+{
+    return elems;
+}
+
 

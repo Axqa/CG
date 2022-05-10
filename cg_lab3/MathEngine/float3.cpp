@@ -247,9 +247,53 @@ float3 float3::Normalized() const
 
 }
 
+void float3::PerpendicularBasis(float3 &outB, float3 &outC) const
+{
+    // Pixar orthonormal basis code: https://graphics.pixar.com/library/OrthonormalB/paper.pdf
+    float sign = copysignf(1.0f, z);
+    const float a = -1.0f / (sign + z);
+    const float b = x * y * a;
+    outB = float3(1.0f + sign * x * x * a, sign * b,             -sign * x);
+    outC = float3(                      b, sign + y * y * a,            -y);
+
+}
+
 void float3::Set(float x, float y, float z)
 {
     this->x = x;
     this->y = y;
     this->z = z;
+}
+
+void float3::RotateAroundX(float angle)
+{
+    float sin, cos;
+    SinCos(angle, sin, cos);
+    y = y * cos + z * sin;
+    z = y * -sin + z * cos;
+}
+
+void float3::RotateAroundY(float angle)
+{
+    float sin, cos;
+    SinCos(angle, sin, cos);
+    x = x * cos + z * -sin;
+    z = x * sin + z * cos;
+}
+
+void float3::RotateAroundZ(float angle)
+{
+    float sin, cos;
+    SinCos(angle, sin, cos);
+    x = x * cos + y * sin;
+    y = x * -sin + y * cos;
+}
+
+float3 float3::RodriguesRotation(float3 unit, float angle)
+{
+    float sin, cos;
+    SinCos(angle, sin, cos);
+
+    float3 rot = Mul(cos) + Cross(unit) * sin + unit.Mul(Mul(unit)) * (1-cos);
+    return rot;
 }

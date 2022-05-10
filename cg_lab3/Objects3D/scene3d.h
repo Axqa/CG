@@ -25,6 +25,7 @@ public:
     decltype(elems.begin()) begin() {return elems.begin();};
     decltype(elems.end()) end() {return elems.end();};
 
+    QList<Object3D*> items();
 signals:
     void SceneChanged();
 };

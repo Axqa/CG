@@ -22,6 +22,13 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void wheelEvent(QGraphicsSceneWheelEvent *event) override;
 
+signals:
+    void mousePress(Qt::MouseButton btn, QPointF pos);
+    void mouseRelease(Qt::MouseButton btn);
+    void mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to);
+
+private:
+    Qt::MouseButton btnPressed = Qt::NoButton;
     // QGraphicsScene interface
 //protected:
 //    void drawItems(QPainter *painter, int numItems, QGraphicsItem *items[], const QStyleOptionGraphicsItem options[], QWidget *widget) override;

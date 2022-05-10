@@ -27,6 +27,8 @@ QGraphicsItemGroup *Line3D::DrawOnCameraView(Camera &cam)
     QGraphicsItemGroup *group = new QGraphicsItemGroup();
     group->addToGroup(line);
 
+    itemOnScene = group;
+
     return group;
 }
 
@@ -48,4 +50,5 @@ void Line3D::FromMatrix(MatrixF m)
 
 void Line3D::Normalize()
 {
+
 }

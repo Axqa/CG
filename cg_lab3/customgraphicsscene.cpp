@@ -5,6 +5,7 @@
 #include "QDebug"
 #include "QCoreApplication"
 #include "QPainter"
+#include <QGraphicsItem>
 
 CustomGraphicsScene::CustomGraphicsScene(QObject *parent) : QGraphicsScene(parent)
 {
@@ -15,6 +16,9 @@ CustomGraphicsScene::CustomGraphicsScene(QObject *parent) : QGraphicsScene(paren
 CustomGraphicsScene::~CustomGraphicsScene()
 {
 //    qApp->removeEventFilter(this);
+    for (auto i : items()) {
+        delete i;
+    }
 }
 
 
@@ -52,21 +56,27 @@ bool CustomGraphicsScene::eventFilter(QObject *watched, QEvent *event)
 
 void CustomGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << "Mouse pressed at " << event->scenePos();
+    qDebug() << "Mouse pressed at " << event->scenePos() << items(event->scenePos());
+    btnPressed = event->button();
+    emit mousePress(event->button(), event->scenePos());
 }
 
 void CustomGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << "Mouse moved";
+    qDebug() << "Mouse moved" << event->buttons() << "from" << event->lastScenePos() << "to" << event->scenePos();
+    emit mouseMove(event->buttons(), event->lastScenePos(), event->scenePos());
 }
 
 void CustomGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     qDebug() << "Release mouse button";
+    btnPressed = Qt::NoButton;
+    emit mouseRelease(event->button());
 }
 
 void CustomGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
+    qDebug() << "Wheel event";
 }
 
 
