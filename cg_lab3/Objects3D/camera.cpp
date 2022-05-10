@@ -2,6 +2,7 @@
 #include "../customgraphicsscene.h"
 #include "../MathEngine/ray.h"
 #include <QDebug>
+#include <QElapsedTimer>
 
 Camera::Camera()
 {
@@ -29,10 +30,17 @@ CustomGraphicsScene *Camera::CameraView()
     connect(gScene, &CustomGraphicsScene::mousePress, this, &Camera::mousePress);
     connect(gScene, &CustomGraphicsScene::mouseRelease, this, &Camera::mouseRelease);
 
+    QElapsedTimer timer;
+    timer.start();
     for (auto i: scene->items()) {
-        gScene->addItem(i->DrawOnCameraView(*this));
+        for (auto j : i->DrawOnCameraView(*this)->childItems())
+            gScene->addItem(j);
+//        gScene->addItem(i->DrawOnCameraView(*this));
 
     }
+    qDebug() << "adding elems:" << timer.elapsed() << "ms";
+
+    connect(this, &Camera::MoveObject, scene, &Scene3D::MoveRay);
 
     return gScene;
 }
@@ -92,9 +100,9 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
 
 //        float3 offset = planeFrom - plane.normal * planeFrom.Length();
 //        float3 newTo = planeTo - offset;
-        float3 newTo = plane.normal * planeTo.Length() + (planeFrom - planeTo);
-//        float3 newTo = plane.normal.RodriguesRotation(planeFrom.Cross(planeTo).Normalized(), planeFrom.AngleBetween(planeTo));
-//        qDebug() << "norm angle:" << plane.normal.AngleBetweenNorm(newTo.Normalized())
+//        float3 newTo = plane.normal * planeTo.Length() + (planeFrom - planeTo);
+        float3 newTo = plane.normal.RodriguesRotation(planeFrom.Cross(planeTo).Normalized(), planeFrom.AngleBetween(planeTo));
+        qDebug() << "norm angle:" << plane.normal.AngleBetweenNorm(newTo.Normalized());
 //                 << "old normal:" << plane.normal.x << plane.normal.y << plane.normal.z
          qDebug()<< "new normal" << newTo.Normalized();
         plane.normal = newTo.Normalized() ;
@@ -107,6 +115,12 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
     }
     if (btns.testFlag(Qt::MouseButton::LeftButton)) {
         /// Here must be emiting signal to scene with casted ray
+
+        Ray rayFrom = CastRayFromPoint(from);
+        Ray rayTo = CastRayFromPoint(to);
+
+        MoveObject(rayFrom, rayTo);
+
         return;
     }
 }

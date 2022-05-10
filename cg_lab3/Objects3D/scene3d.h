@@ -7,6 +7,7 @@
 #include <QList>
 #include "object3d.h"
 #include "camera.h"
+#include "clss.h"
 
 class Scene3D : public QObject
 {
@@ -14,6 +15,7 @@ class Scene3D : public QObject
 public:
     QList <Object3D*> elems;
     QList <Camera*> cams;
+    QList <SelectablePoint*> selectables;
 public:
     Scene3D();
     ~Scene3D();
@@ -26,6 +28,10 @@ public:
     decltype(elems.end()) end() {return elems.end();};
 
     QList<Object3D*> items();
+
+public slots:
+    void MoveRay(Ray &from, Ray &to);
+
 signals:
     void SceneChanged();
 };

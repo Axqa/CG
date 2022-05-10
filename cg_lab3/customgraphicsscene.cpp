@@ -10,6 +10,7 @@
 CustomGraphicsScene::CustomGraphicsScene(QObject *parent) : QGraphicsScene(parent)
 {
     setBackgroundBrush(QColor(192,192,192));
+     setItemIndexMethod(NoIndex);
 //    qApp->installEventFilter(this);
 }
 

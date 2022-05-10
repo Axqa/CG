@@ -20,9 +20,12 @@ SOURCES += \
     Objects3D/object3d.cpp \
     Objects3D/point3.cpp \
     Objects3D/scene3d.cpp \
+    Objects3D/selectable.cpp \
+    Objects3D/selectablepoint.cpp \
     customgraphicsscene.cpp \
     main.cpp \
     mainwindow.cpp \
+    mygraphicsview.cpp \
     styleloader.cpp
 
 HEADERS += \
@@ -42,14 +45,18 @@ HEADERS += \
     Objects3D/object3d.h \
     Objects3D/point3.h \
     Objects3D/scene3d.h \
+    Objects3D/selectable.h \
+    Objects3D/selectablepoint.h \
     commondec.h \
     customgraphicsscene.h \
     mainwindow.h \
     myassert.h \
+    mygraphicsview.h \
     styleloader.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    mygraphicsview.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

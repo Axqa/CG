@@ -5,6 +5,7 @@
 #include "../myassert.h"
 #include <vector>
 #include <iostream>
+#include <QString>
 
 template <typename T = float>
 class Row : public std::vector<T>
@@ -80,6 +81,7 @@ public:
     Matrix NormalizedW();
 
     friend std::ostream& operator<<  (std::ostream &out, const Matrix<> &m) ;
+    operator QString() const ;
 };
 
 typedef  Matrix<float> MatrixF;

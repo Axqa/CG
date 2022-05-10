@@ -17,7 +17,7 @@ public:
     /// Center of all interaction. I.e. rotation around it.
     float3 camPoint;
     /// Distance for perspective view
-    float camDist = 10;
+    float camDist = -500;
     /// Add perspectie view to proj matrix
     bool addPerspective = false;
 
@@ -45,6 +45,7 @@ public slots:
 
 signals:
     void ViewChanged();
+    void MoveObject(Ray &from, Ray &to);
 };
 
 #endif // CAMERA_H

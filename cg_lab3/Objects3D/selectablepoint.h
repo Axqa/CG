@@ -1,0 +1,57 @@
+#ifndef SELECTABLEPOINT_H
+#define SELECTABLEPOINT_H
+
+#include "point3.h"
+#include <QObject>
+#include "selectable.h"
+
+class SelectablePoint : public Point3, public Selectable
+{
+    Q_OBJECT
+public:
+
+    Point3 projX;
+    Point3 projY;
+    Point3 projZ;
+    float projRad = 5;
+    QColor projColor = Qt::gray;
+    QColor projLineCol = Qt::yellow;
+
+    Point3 unitX;
+    Point3 unitY;
+    Point3 unitZ;
+    float unitRad = 1;
+    QColor supColor = Qt::gray;
+
+public:
+    SelectablePoint();
+    SelectablePoint(float x, float y, float z) : Point3(x,y,z) {initProj();}
+    SelectablePoint(float x, float y, float z, QColor color): Point3(x,y,z,color) {initProj();}
+    SelectablePoint(float x, float y, float z, float rad): Point3(x,y,z, rad) {initProj();}
+    SelectablePoint(float x, float y, float z, float rad, QColor color): Point3(x,y,z,rad,color) {initProj();}
+
+    void initProj();
+
+    // Object3D interface
+public:
+    QGraphicsItemGroup *DrawOnCameraView(Camera &cam) override;
+    MatrixF ToMatrix() override;
+    void FromMatrix(MatrixF m) override;
+    void Normalize() override;
+
+    // Selectable interface
+public:
+    void setSelected(bool state) override;
+    bool isIntersects(const Ray &ray, float &dist) override;
+
+public slots:
+    void MovingRay(Ray &from, Ray &to);
+
+signals:
+    void SelectionChanged(bool state);
+
+protected:
+    Type3d _type = Type3d::SelectablePoint;
+};
+
+#endif // SELECTABLEPOINT_H

@@ -253,6 +253,9 @@ public:
     float3 RodriguesRotation(float3 unit, float angle);
 
     operator QString() const { return "float3("+ QString::number(x)+", "+QString::number(y)+", "+QString::number(z)+")"; }
+
+    std::vector<float> ToVector() { return std::vector<float>{x,y,z}; };
+    std::vector<float> ToVector4() { return std::vector<float>{x,y,z,1}; };
 };
 
 inline float Dot(const float3 &a, const float3 &b) { return a.Dot(b); }

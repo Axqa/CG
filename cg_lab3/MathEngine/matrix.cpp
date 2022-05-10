@@ -356,6 +356,18 @@ Matrix<T> Matrix<T>::NormalizedW()
     return res;
 }
 
+template<typename T>
+Matrix<T>::operator QString() const
+{
+    QString res;
+    for (u32 i = 0; i < rowCount; ++i) {
+        for (u32 j = 0; j < colCount; ++j) {
+            res += QString::number( at(i,j))  +  " ";
+        }
+        res += "\n";
+    }
+}
+
 template <typename T>
 std::ostream& operator<< (std::ostream &out, const Matrix<T> &m)
 {

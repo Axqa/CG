@@ -19,6 +19,7 @@ public:
     Point3(float x, float y, float z, float rad);
     Point3(float x, float y, float z, float rad, QColor color);
 
+    QRectF RectForPainter();
 
     // Object3D interface
 public:
@@ -29,6 +30,9 @@ public:
     Matrix<float> ToMatrix() override;
     void FromMatrix(Matrix<float> m) override;
     void Normalize() override;
+
+protected:
+    Type3d _type = Type3d::Point;
 };
 
 #endif // POINT3_H

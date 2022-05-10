@@ -26,19 +26,26 @@ Point3::Point3(float x, float y, float z, float rad, QColor color)
 {
 }
 
+QRectF Point3::RectForPainter()
+{
+    float left = pos.x - rad;
+    float top  = pos.y - rad;
+
+    return QRectF(left, top, rad*2, rad*2);
+}
+
 QGraphicsItemGroup* Point3::DrawOnCameraView(Camera &cam)
 {
     MatrixF prPoint = cam.ProjectOnScreen(this);
     Point3 nPoint;
     nPoint.FromMatrix(prPoint);
 
-    float left = nPoint.pos.x - nPoint.rad;
-    float top  = nPoint.pos.y - nPoint.rad;
-
-    QGraphicsEllipseItem *el = new QGraphicsEllipseItem(left, top, nPoint.rad*2, nPoint.rad*2);
+    QGraphicsEllipseItem *el = new QGraphicsEllipseItem(nPoint.RectForPainter());
 
     el->setPen(QColor(Qt::black));
     el->setBrush(color);
+
+    el->setZValue(nPoint.pos.z + nPoint.rad );
 
     QGraphicsItemGroup *group = new QGraphicsItemGroup();
     group->addToGroup(el);
@@ -58,6 +65,7 @@ MatrixF Point3::ToMatrix()
 
 void Point3::FromMatrix(MatrixF m)
 {
+    rad = rad / m[0][3];
     m = m.NormalizedW();
     // hope m is 1x4 or 1x3
     massert(m.ColCount() > 2, "Wrong dims matrix");

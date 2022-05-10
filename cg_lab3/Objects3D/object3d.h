@@ -9,6 +9,15 @@
 #include <QObject>
 #include <QGraphicsItem>
 
+
+enum class Type3d {
+    Base,
+    Point,
+    Line,
+    SelectablePoint
+};
+
+
 class Object3D : public QObject
 {
     Q_OBJECT
@@ -25,8 +34,11 @@ public:
     /// Returns matrix of transformed this
     virtual MatrixF MatrixTransform(MatrixF m);
 
+    virtual Type3d type() {return _type;}
+
 protected:
     QGraphicsItem *itemOnScene = nullptr;
+    Type3d _type = Type3d::Base;
 
 signals:
     void ObjectChanged();
