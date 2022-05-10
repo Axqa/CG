@@ -58,6 +58,7 @@ MatrixF Point3::ToMatrix()
 
 void Point3::FromMatrix(MatrixF m)
 {
+    m = m.NormalizedW();
     // hope m is 1x4 or 1x3
     massert(m.ColCount() > 2, "Wrong dims matrix");
     pos.x = m[0][0];

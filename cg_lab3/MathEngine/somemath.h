@@ -18,6 +18,13 @@ FORCE_INLINE float ToRad(float degree) {
     return degree * (pi / 180);
 }
 
+/// Radians to degrees
+FORCE_INLINE float ToDeg(float rad) {
+    return rad * (180 / pi);
+}
+
+
+
 FORCE_INLINE float Max(float x, float y) {
     return fmax(x,y);
 }

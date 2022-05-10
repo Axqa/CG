@@ -43,6 +43,7 @@ MatrixF Line3D::ToMatrix()
 
 void Line3D::FromMatrix(MatrixF m)
 {
+    m = m.NormalizedW();
     p1.x = m[0][0]; p2.x = m[1][0];
     p1.y = m[0][1]; p2.y = m[1][1];
     p1.z = m[0][2]; p2.z = m[1][2];

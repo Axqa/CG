@@ -7,7 +7,7 @@ Camera::Camera()
 {
 //    plane = Plane({100,0,0},{0,100,0},{0,0,100});
 //        plane = Plane({0,0,100},{0,100,0},{0,0,0});
-    plane = Plane(float3(1,0,0).Normalized(), 300);
+    plane = Plane(float3(1,1,1).Normalized(), 300);
 }
 
 Camera::Camera(Plane p)
@@ -86,13 +86,17 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
         qDebug() << "planeFrom:" << planeFrom << "planeTo:" << planeTo;
         qDebug() << "angle between" << planeFrom.AngleBetween(planeTo);
 
+        if (plane.normal.z < 0) {
+            std::swap(planeFrom, planeTo);
+        }
+
 //        float3 offset = planeFrom - plane.normal * planeFrom.Length();
 //        float3 newTo = planeTo - offset;
         float3 newTo = plane.normal * planeTo.Length() + (planeFrom - planeTo);
-
-        qDebug() << "norm angle:" << plane.normal.AngleBetweenNorm(newTo.Normalized())
-                 << "old normal:" << plane.normal.x << plane.normal.y << plane.normal.z
-                 << "new normal" << newTo.Normalized();
+//        float3 newTo = plane.normal.RodriguesRotation(planeFrom.Cross(planeTo).Normalized(), planeFrom.AngleBetween(planeTo));
+//        qDebug() << "norm angle:" << plane.normal.AngleBetweenNorm(newTo.Normalized())
+//                 << "old normal:" << plane.normal.x << plane.normal.y << plane.normal.z
+         qDebug()<< "new normal" << newTo.Normalized();
         plane.normal = newTo.Normalized() ;
         ViewChanged();
         return;

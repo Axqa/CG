@@ -7,7 +7,7 @@ Object3D::Object3D()
 
 void Object3D::Transform(MatrixF m)
 {
-    FromMatrix((ToMatrix()*m).NormalizedW());
+    FromMatrix((ToMatrix()*m));
 //    Normalize();
     ObjectChanged();
 }

@@ -269,24 +269,30 @@ void float3::RotateAroundX(float angle)
 {
     float sin, cos;
     SinCos(angle, sin, cos);
-    y = y * cos + z * sin;
-    z = y * -sin + z * cos;
+    float3 res(x, y, z);
+    res.y = y * cos + z * sin;
+    res.z = y * -sin + z * cos;
+    operator= (res);
 }
 
 void float3::RotateAroundY(float angle)
 {
     float sin, cos;
     SinCos(angle, sin, cos);
-    x = x * cos + z * -sin;
-    z = x * sin + z * cos;
+    float3 res(x, y, z);
+    res.x = x * cos + z * -sin;
+    res.z = x * sin + z * cos;
+    operator= (res);
 }
 
 void float3::RotateAroundZ(float angle)
 {
     float sin, cos;
     SinCos(angle, sin, cos);
-    x = x * cos + y * sin;
-    y = x * -sin + y * cos;
+    float3 res(x, y, z);
+    res.x = x * cos + y * sin;
+    res.y = x * -sin + y * cos;
+    operator= (res);
 }
 
 float3 float3::RodriguesRotation(float3 unit, float angle)
