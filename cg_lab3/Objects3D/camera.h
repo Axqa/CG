@@ -25,6 +25,8 @@ public:
 
     Scene3D* scene;
 
+    QList<Object3D*> extraItems;
+
 public:
     Camera();
     Camera(Plane p);
@@ -46,6 +48,7 @@ public slots:
 signals:
     void ViewChanged();
     void MoveObject(Ray &from, Ray &to);
+    void MousePress(Ray &ray);
 };
 
 #endif // CAMERA_H

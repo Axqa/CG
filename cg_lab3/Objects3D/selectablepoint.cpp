@@ -1,9 +1,11 @@
 #include "selectablepoint.h"
 #include "line3d.h"
 #include "../MathEngine/ray.h"
+#include "../MathEngine/Intersections.h"
 
 SelectablePoint::SelectablePoint()
 {
+    selected = false;
     initProj();
 }
 
@@ -12,7 +14,7 @@ void SelectablePoint::initProj()
     projX.pos = {0, pos.y, pos.z}; projX.color = projColor; projX.rad = projRad;
     projY.pos = {pos.x, 0, pos.z}; projY.color = projColor; projY.rad = projRad;
     projZ.pos = {pos.x, pos.y, 0}; projZ.color = projColor; projZ.rad = projRad;
-    selected = true;
+//    selected = true;
 }
 
 
@@ -122,20 +124,162 @@ void SelectablePoint::setSelected(bool state)
 
 bool SelectablePoint::isIntersects(const Ray &ray, float &dist)
 {
-    float toC = ray.Distance(pos);
-    float toX = ray.Distance(projX.pos);
-    float toY = ray.Distance(projY.pos);
-    float toZ = ray.Distance(projZ.pos);
-
-    if (toC < rad) {
-        qDebug() << "grats, it intersects";
-    } else {
-        qDebug() << "nah, you missed";
+    if (!selected) {
+        bool fl = ray.Distance(pos,dist) < rad;
+        qDebug() << "dist =" << dist;
+        return fl;
     }
+
+    float dToC;
+    float3 clToC = ray.ClosestPoint(pos, dToC);
+    float sqdToC = clToC.DistanceSq(pos);
+    float dToX;
+    float3 clToX = ray.ClosestPoint(projX.pos, dToX);
+    float sqdToX = clToX.DistanceSq(projX.pos);
+    float dToY;
+    float3 clToY = ray.ClosestPoint(projY.pos, dToY);
+    float sqdToY = clToY.DistanceSq(projY.pos);
+    float dToZ;
+    float3 clToZ = ray.ClosestPoint(projZ.pos, dToZ);
+    float sqdToZ = clToZ.DistanceSq(projZ.pos);
+
+    if (dToC < __min(__min(dToX,dToY),dToZ)) {
+        if (sqdToC < rad*rad * 4) {
+            qDebug() << "press in center";
+            return true;
+        }
+    }
+    if (dToX < __min(dToY, dToZ)) {
+        if (sqdToX < projX.rad * projX.rad * 4) {
+            qDebug() << "press in prX";
+            return true;
+        }
+    }
+    if (dToY < dToZ) {
+        if (sqdToY < projY.rad * projY.rad * 4) {
+            qDebug() << "press in prY";
+            return true;
+        }
+
+    }
+    if (1) {
+        if (sqdToZ < projZ.rad * projZ.rad * 4) {
+            qDebug() << "press in prZ";
+            return true;
+        }
+
+    }
+    return false;
+
+
 }
 
 void SelectablePoint::MovingRay(Ray &from, Ray &to)
 {
-    float d;
-    isIntersects(from, d);
+    qDebug() << "move ray";
+    if (!selected)
+        return;
+    Ray ray = from;
+
+    float dToC;
+    float3 clToC = ray.ClosestPoint(pos, dToC);
+    float sqdToC = clToC.DistanceSq(pos);
+
+    float dToX;
+    float3 clToX = ray.ClosestPoint(projX.pos, dToX);
+    float sqdToX = clToX.DistanceSq(projX.pos);
+
+    float dToY;
+    float3 clToY = ray.ClosestPoint(projY.pos, dToY);
+    float sqdToY = clToY.DistanceSq(projY.pos);
+
+    float dToZ;
+    float3 clToZ = ray.ClosestPoint(projZ.pos, dToZ);
+    float sqdToZ = clToZ.DistanceSq(projZ.pos);
+
+    if (dToC < __min(__min(dToX,dToY),dToZ)) {
+        qDebug() << "1" << sqdToC;
+        if (sqdToC < rad*rad*4) {
+            qDebug() << "1_2";
+            /// interact with center
+            vec newPos = to.GetPoint(dToC) /*+ (pos - clToC)*/;
+            pos = newPos;
+            initProj();
+            ObjectChanged();
+            return;
+        }
+    }
+    if (dToX < __min(dToY, dToZ)) {
+        qDebug() << "2" << sqdToX;
+        if (sqdToX < projX.rad * projX.rad*10) {
+            qDebug() << "2_2";
+            /// interact with projX
+            vec newPos;
+            Plane plane({1,0,0},0);
+
+            if (RayPlaneIntersection(to, plane, newPos)) {
+                newPos = newPos /*+ (projX.pos - clToX)*/;
+                pos.y = newPos.y;
+                pos.z = newPos.z;
+                initProj();
+                ObjectChanged();
+            }
+            return;
+        }
+    }
+    if (dToY < dToZ) {
+        qDebug() << "3" << sqdToY;
+        if (sqdToY < projY.rad * projY.rad*10) {
+            qDebug() << "3_2";
+            /// interact with projY
+            vec newPos;
+            Plane plane({0,1,0},0);
+
+            if (RayPlaneIntersection(to, plane, newPos)) {
+                newPos = newPos /*+ (projY.pos - clToY)*/;
+                pos.x = newPos.x;
+                pos.z = newPos.z;
+                initProj();
+                ObjectChanged();
+            }
+            return;
+        }
+
+    }
+    if (1) {
+        qDebug() << "4" << sqdToZ;
+        if (sqdToZ < projZ.rad * projZ.rad*10) {
+            qDebug() << "4_2";
+            /// interact with projZ
+            vec newPos;
+            Plane plane({0,0,1},0);
+
+            if (RayPlaneIntersection(to, plane, newPos)) {
+                newPos = newPos /*+ (projZ.pos - clToZ)*/;
+                pos.y = newPos.y;
+                pos.x = newPos.x;
+                qDebug() << "new pos " << pos;
+                initProj();
+                ObjectChanged();
+            }
+            return;
+        }
+
+    }
+
+    return;
+}
+
+float SelectablePoint::MousePressRay(Ray &ray)
+{
+    if (!selected) {
+        if (ray.Distance(pos) < rad) {
+            selected = true;
+        }
+    } else {
+        float d;
+        selected = isIntersects(ray, d);
+        return d;
+    }
+    return 0;
 }

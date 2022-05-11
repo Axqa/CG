@@ -2,6 +2,7 @@
 #define COMMONDEC_H
 
 #include <assert.h>
+#include "EnumMacros.h"
 
 typedef unsigned char u8; ///< a single byte: 0-255.
 typedef unsigned short u16; ///< 2 bytes: 0 - 65535.

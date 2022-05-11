@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "../customgraphicsscene.h"
 #include "../MathEngine/ray.h"
+#include "line3d.h"
 #include <QDebug>
 #include <QElapsedTimer>
 
@@ -9,6 +10,7 @@ Camera::Camera()
 //    plane = Plane({100,0,0},{0,100,0},{0,0,100});
 //        plane = Plane({0,0,100},{0,100,0},{0,0,0});
     plane = Plane(float3(1,1,1).Normalized(), 300);
+
 }
 
 Camera::Camera(Plane p)
@@ -38,9 +40,13 @@ CustomGraphicsScene *Camera::CameraView()
 //        gScene->addItem(i->DrawOnCameraView(*this));
 
     }
+    for (auto i : extraItems) {
+        for (auto j : i->DrawOnCameraView(*this)->childItems())
+                gScene->addItem(j);
+    }
     qDebug() << "adding elems:" << timer.elapsed() << "ms";
 
-    connect(this, &Camera::MoveObject, scene, &Scene3D::MoveRay);
+
 
     return gScene;
 }
@@ -52,14 +58,18 @@ MatrixF Camera::ProjectOnScreen(Object3D *obj)
 
 Ray Camera::CastRayFromPoint(QPointF point)
 {
-    float3 onPlane = plane.Point(point.x(), point.y());
+    float x = point.x(), y = point.y();
+    if (plane.normal.z < 0) {
+        std::swap(x, y);
+    }
+    float3 onPlane = plane.Point(x, y);
+    qDebug() << "point in casting" << onPlane;
     if (!addPerspective){
         return Ray(onPlane, plane.normal * -1);
     } else {
         float3 viewPoint = plane.normal * (plane.d + camDist);
         return Ray(onPlane, (onPlane - viewPoint).Normalized());
     }
-    Ray r;
 
 }
 
@@ -72,7 +82,18 @@ void Camera::SceneChanged()
 
 void Camera::mousePress(Qt::MouseButton btn, QPointF pos)
 {
-    qDebug() << "Mouse press in space:" << plane.Point(pos.x(),pos.y());
+    if (btn & Qt::MouseButton::LeftButton) {
+        qDebug() << "Mouse press in space:" << plane.Point(pos.x(),pos.y());
+        Ray ray = CastRayFromPoint(pos);
+        extraItems << new Line3D(ray.pos, ray.GetPoint(500));
+        MousePress(ray);
+    }
+    if (btn & Qt::MouseButton::MidButton) {
+        for (auto i: extraItems) {
+            delete i;
+        }
+        extraItems.clear();
+    }
 }
 
 void Camera::mouseRelease(Qt::MouseButton btn)
@@ -82,7 +103,7 @@ void Camera::mouseRelease(Qt::MouseButton btn)
 
 void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
 {
-    qDebug() << "from" << from << "to" << to;
+//    qDebug() << "from" << from << "to" << to;
     if (btns == 0) {
         return;
     }
@@ -111,6 +132,7 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
     }
     if (btns.testFlag(Qt::MouseButton::MiddleButton)) {
         /// Here must be moving
+
         return;
     }
     if (btns.testFlag(Qt::MouseButton::LeftButton)) {

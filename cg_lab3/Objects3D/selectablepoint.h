@@ -25,10 +25,10 @@ public:
 
 public:
     SelectablePoint();
-    SelectablePoint(float x, float y, float z) : Point3(x,y,z) {initProj();}
-    SelectablePoint(float x, float y, float z, QColor color): Point3(x,y,z,color) {initProj();}
-    SelectablePoint(float x, float y, float z, float rad): Point3(x,y,z, rad) {initProj();}
-    SelectablePoint(float x, float y, float z, float rad, QColor color): Point3(x,y,z,rad,color) {initProj();}
+    SelectablePoint(float x, float y, float z) : Point3(x,y,z) {initProj();selected = false;}
+    SelectablePoint(float x, float y, float z, QColor color): Point3(x,y,z,color) {initProj();selected = false;}
+    SelectablePoint(float x, float y, float z, float rad): Point3(x,y,z, rad) {initProj();selected = false;}
+    SelectablePoint(float x, float y, float z, float rad, QColor color): Point3(x,y,z,rad,color) {initProj();selected = false;}
 
     void initProj();
 
@@ -46,12 +46,11 @@ public:
 
 public slots:
     void MovingRay(Ray &from, Ray &to);
-
+    float MousePressRay(Ray &ray);
 signals:
     void SelectionChanged(bool state);
 
-protected:
-    Type3d _type = Type3d::SelectablePoint;
+
 };
 
 #endif // SELECTABLEPOINT_H

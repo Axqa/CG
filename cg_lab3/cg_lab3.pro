@@ -29,6 +29,8 @@ SOURCES += \
     styleloader.cpp
 
 HEADERS += \
+    EnumMacros.h \
+    MathEngine/Intersections.h \
     MathEngine/MathAll.h \
     MathEngine/MathConstants.h \
     MathEngine/float2.h \

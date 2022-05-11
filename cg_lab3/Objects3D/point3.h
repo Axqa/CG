@@ -31,8 +31,7 @@ public:
     void FromMatrix(Matrix<float> m) override;
     void Normalize() override;
 
-protected:
-    Type3d _type = Type3d::Point;
+
 };
 
 #endif // POINT3_H

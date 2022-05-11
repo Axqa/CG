@@ -16,6 +16,8 @@ public:
     QList <Object3D*> elems;
     QList <Camera*> cams;
     QList <SelectablePoint*> selectables;
+
+    SelectablePoint* selected = nullptr;
 public:
     Scene3D();
     ~Scene3D();
@@ -31,6 +33,7 @@ public:
 
 public slots:
     void MoveRay(Ray &from, Ray &to);
+    void PressRay(Ray &ray);
 
 signals:
     void SceneChanged();

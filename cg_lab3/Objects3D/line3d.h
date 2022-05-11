@@ -28,8 +28,7 @@ public:
 
     QGraphicsItemGroup* LineToSegments(const float3 &p1, const float3 &p2, int segmCount, QPen pen,QGraphicsItemGroup *group = nullptr);
 
-protected:
-    Type3d _type = Type3d::Line;
+
 };
 
 #endif // LINE3D_H

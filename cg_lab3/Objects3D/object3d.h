@@ -8,15 +8,14 @@
 #include "camera.h"
 #include <QObject>
 #include <QGraphicsItem>
+#include "../commondec.h"
 
-
-enum class Type3d {
-    Base,
-    Point,
-    Line,
-    SelectablePoint
-};
-
+DECLARE_ENUM( Type3d,
+                Base,
+              Point,
+              Line,
+              SelectablePoint
+        );
 
 class Object3D : public QObject
 {
@@ -34,11 +33,11 @@ public:
     /// Returns matrix of transformed this
     virtual MatrixF MatrixTransform(MatrixF m);
 
-    virtual Type3d type() {return _type;}
+//    virtual Type3d::Type3d type() {return _type;}
 
 protected:
     QGraphicsItem *itemOnScene = nullptr;
-    Type3d _type = Type3d::Base;
+
 
 signals:
     void ObjectChanged();
