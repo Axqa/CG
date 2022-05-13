@@ -5,6 +5,7 @@
 
 #include "../MathEngine/float3.h"
 #include "scene3d.h"
+//#include "point3.h"
 #include "../MathEngine/plane.h"
 #include "QGraphicsScene"
 #include "../customgraphicsscene.h"
@@ -15,7 +16,7 @@ class Camera : public QObject
     Q_OBJECT
 public:
     /// Center of all interaction. I.e. rotation around it.
-    float3 camPoint;
+    float3 camPoint = {0,0,0};
     /// Distance for perspective view
     float camDist = -500;
     /// Add perspectie view to proj matrix
@@ -26,6 +27,7 @@ public:
     Scene3D* scene;
 
     QList<Object3D*> extraItems;
+    Point3* cam = nullptr;
 
 public:
     Camera();

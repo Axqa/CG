@@ -26,6 +26,16 @@ Point3::Point3(float x, float y, float z, float rad, QColor color)
 {
 }
 
+void Point3::Set(float x, float y, float z, float rad, QColor color)
+{
+    Set({x,y,z}, rad, color);
+}
+
+void Point3::Set(float3 pos, float rad, QColor color)
+{
+    this->pos = pos; this->rad = rad; this-> color = color;
+}
+
 QRectF Point3::RectForPainter()
 {
     float left = pos.x - rad;
@@ -37,7 +47,7 @@ QRectF Point3::RectForPainter()
 QGraphicsItemGroup* Point3::DrawOnCameraView(Camera &cam)
 {
     MatrixF prPoint = cam.ProjectOnScreen(this);
-    Point3 nPoint;
+    Point3 nPoint (pos.x,pos.y,pos.z,rad,color);
     nPoint.FromMatrix(prPoint);
 
     QGraphicsEllipseItem *el = new QGraphicsEllipseItem(nPoint.RectForPainter());

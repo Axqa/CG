@@ -22,19 +22,20 @@ int main( int argc, char **argv ) {
     w.init(scene);
     w.show();
 
-    scene->addObject(new Point3(0,0,0, QColor(Qt::black)));
-    scene->addObject(new Point3(50,0,0));
-    scene->addObject(new Point3(100,0,0, QColor(Qt::green)));
-    scene->addObject(new Point3(0,50,0));
-    scene->addObject(new Point3(0,100,0, QColor(Qt::red)));
-    scene->addObject(new Point3(0,0,50));
-    scene->addObject(new Point3(0,0,100, QColor(Qt::blue)));
+//    scene->addObject(new Point3(0,0,0, 5, QColor(Qt::black)));
+//    scene->addObject(new Point3(50,0,0));
+//    scene->addObject(new Point3(100,0,0, QColor(Qt::green)));
+//    scene->addObject(new Point3(0,50,0));
+//    scene->addObject(new Point3(0,100,0, QColor(Qt::red)));
+//    scene->addObject(new Point3(0,0,50));
+//    scene->addObject(new Point3(0,0,100, QColor(Qt::blue)));
 
     scene->addObject(new Line3D({0,0,0}, {200,0,0}, QColor(Qt::green)));
     scene->addObject(new Line3D({0,0,0}, {0,200,0}, QColor(Qt::red)));
     scene->addObject(new Line3D({0,0,0}, {0,0,200}, QColor(Qt::blue)));
 
     scene->addObject(new SelectablePoint(50,50,50));
+    scene->addObject(new SelectablePoint(100,50,50));
 
 //    scene->addObject(new Line3D(float3{1,0,0} * cam->plane.d,
 //                                float3{0,1,0} * cam->plane.d));
@@ -52,5 +53,10 @@ int main( int argc, char **argv ) {
 //    qDebug() << float3(1,0,0).AngleBetween({-1,0,0});
 //    qDebug() << float3(1,0,0).AngleBetween({-1,-1,0});
 //    qDebug() << float3(1,0,0).AngleBetween({1,-1,0});
+    vec x,y;
+    vec z (0,0,-1); z.Normalize();
+    z.PerpendicularBasis(x,y);
+    qDebug()  << "x" << x << "y" << y;
+    qDebug() << float3(1,-1,0).Normalized().Dot(float3(1,0,0));
     return a.exec();
 }

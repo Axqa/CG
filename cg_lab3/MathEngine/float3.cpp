@@ -250,12 +250,16 @@ float3 float3::Normalized() const
 void float3::PerpendicularBasis(float3 &outB, float3 &outC) const
 {
     // Pixar orthonormal basis code: https://graphics.pixar.com/library/OrthonormalB/paper.pdf
-    float sign = copysignf(1.0f, z);
-    const float a = -1.0f / (sign + z);
-    const float b = x * y * a;
-    outB = float3(1.0f + sign * x * x * a, sign * b,             -sign * x);
-    outC = float3(                      b, sign + y * y * a,            -y);
+//    float sign = copysignf(1.0f, z);
+//    const float a = -1.0f / (sign + z);
+//    const float b = x * y * a;
+//    outB = float3(1.0f + sign * x * x * a, sign * b,             -sign * x);
+//    outC = float3(                      b, sign + y * y * a,            -y);
 
+    /// Костыль, чтобы outC была соноправлена оси Y
+    float3 yLike (0,1,0);
+    outB = yLike.Cross(*this).Normalized();
+    outC = Cross(outB).Normalized();
 }
 
 void float3::Set(float x, float y, float z)

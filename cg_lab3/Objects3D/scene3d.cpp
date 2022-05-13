@@ -55,6 +55,11 @@ QList<Object3D *> Scene3D::items()
     return elems;
 }
 
+QList<Camera *> Scene3D::cameras()
+{
+    return cams;
+}
+
 void Scene3D::MoveRay(Ray &from, Ray &to)
 {
 //    qDebug() << "Scene gets rays";

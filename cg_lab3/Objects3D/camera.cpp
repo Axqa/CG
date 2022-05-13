@@ -1,16 +1,21 @@
 #include "camera.h"
 #include "../customgraphicsscene.h"
 #include "../MathEngine/ray.h"
+#include "../MathEngine/somemath.h"
 #include "line3d.h"
 #include <QDebug>
 #include <QElapsedTimer>
+#include "point3.h"
 
 Camera::Camera()
+
 {
 //    plane = Plane({100,0,0},{0,100,0},{0,0,100});
 //        plane = Plane({0,0,100},{0,100,0},{0,0,0});
     plane = Plane(float3(1,1,1).Normalized(), 300);
-
+//    cam->Set(camPoint,5,Qt::black);
+    cam = new Point3(0,0,0,5,QColor(Qt::black));
+//    cam->rad = 5;
 }
 
 Camera::Camera(Plane p)
@@ -20,13 +25,14 @@ Camera::Camera(Plane p)
 
 Camera::~Camera()
 {
+//    delete cam;
 //    delete scene;
 }
 
 CustomGraphicsScene *Camera::CameraView()
 {
     CustomGraphicsScene *gScene = new CustomGraphicsScene();
-    gScene->setSceneRect(-400,-300,800, 600);
+    gScene->setSceneRect(-400,-400,800, 800);
 
     connect(gScene, &CustomGraphicsScene::mouseMove, this, &Camera::mouseMove);
     connect(gScene, &CustomGraphicsScene::mousePress, this, &Camera::mousePress);
@@ -44,7 +50,18 @@ CustomGraphicsScene *Camera::CameraView()
         for (auto j : i->DrawOnCameraView(*this)->childItems())
                 gScene->addItem(j);
     }
+
+    // Camera point
+//    Point3 cPoint (camPoint.x,camPoint.y,camPoint.z, 10);
     qDebug() << "adding elems:" << timer.elapsed() << "ms";
+
+    if (cam){
+//        qDebug() << "try add camera";
+        for (auto j : cam->DrawOnCameraView(*this)->childItems())
+                gScene->addItem(j);
+//        gScene->addItem(cam->DrawOnCameraView(*this));
+    }
+
 
 
 
@@ -59,16 +76,17 @@ MatrixF Camera::ProjectOnScreen(Object3D *obj)
 Ray Camera::CastRayFromPoint(QPointF point)
 {
     float x = point.x(), y = point.y();
-    if (plane.normal.z < 0) {
-        std::swap(x, y);
-    }
+//    if (plane.normal.z < 0) {
+//        x *= -1;
+//        y *= -1;
+//    }
     float3 onPlane = plane.Point(x, y);
-    qDebug() << "point in casting" << onPlane;
+//    qDebug() << point <<  "point in casting" << onPlane << "dir" << plane.normal * -1;
     if (!addPerspective){
         return Ray(onPlane, plane.normal * -1);
     } else {
-        float3 viewPoint = plane.normal * (plane.d + camDist);
-        return Ray(onPlane, (onPlane - viewPoint).Normalized());
+        float3 viewPoint = plane.normal * (plane.d - camDist);
+        return Ray(viewPoint, -(viewPoint - onPlane).Normalized());
     }
 
 }
@@ -85,7 +103,7 @@ void Camera::mousePress(Qt::MouseButton btn, QPointF pos)
     if (btn & Qt::MouseButton::LeftButton) {
         qDebug() << "Mouse press in space:" << plane.Point(pos.x(),pos.y());
         Ray ray = CastRayFromPoint(pos);
-        extraItems << new Line3D(ray.pos, ray.GetPoint(500));
+        extraItems << new Line3D(ray.pos, ray.GetPoint(1000));
         MousePress(ray);
     }
     if (btn & Qt::MouseButton::MidButton) {
@@ -94,6 +112,7 @@ void Camera::mousePress(Qt::MouseButton btn, QPointF pos)
         }
         extraItems.clear();
     }
+    ViewChanged();
 }
 
 void Camera::mouseRelease(Qt::MouseButton btn)
@@ -110,15 +129,24 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
     if (btns & Qt::MouseButton::RightButton) {
         /// Here must be rotation
 
+//        if (plane.normal.z < 0) {
+//            std::swap(planeFrom, planeTo);
+//        }
+
         float3 planeFrom = plane.Point(from.x(), from.y());
         float3 planeTo = plane.Point(to.x(), to.y());
+        float angle = planeFrom.AngleBetween(planeTo);;
         qDebug() << "planeFrom:" << planeFrom << "planeTo:" << planeTo;
-        qDebug() << "angle between" << planeFrom.AngleBetween(planeTo);
+        qDebug() << "angle between" << angle;
 
         if (plane.normal.z < 0) {
-            std::swap(planeFrom, planeTo);
+//            std::swap(planeFrom, planeTo);
+//            angle *= -1;
         }
 
+        if (Abs(planeFrom.AngleBetween(planeTo)) < 1e-6) {
+            return;
+        }
 //        float3 offset = planeFrom - plane.normal * planeFrom.Length();
 //        float3 newTo = planeTo - offset;
 //        float3 newTo = plane.normal * planeTo.Length() + (planeFrom - planeTo);
@@ -132,7 +160,13 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
     }
     if (btns.testFlag(Qt::MouseButton::MiddleButton)) {
         /// Here must be moving
+        float3 planeFrom = plane.Point(from.x(), from.y());
+        float3 planeTo = plane.Point(to.x(), to.y());
 
+        camPoint = camPoint + (planeFrom - planeTo);
+        cam->pos = camPoint;
+
+        ViewChanged();
         return;
     }
     if (btns.testFlag(Qt::MouseButton::LeftButton)) {

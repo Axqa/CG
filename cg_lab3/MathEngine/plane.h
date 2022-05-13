@@ -74,6 +74,7 @@ public:
 private:
     MatrixF projMatrix;
     void CalculateProjMatrix(float3 camPoint, float perspectiveDist, bool addPersp);
+    void CalculateProjMatrix2(float3 camPoint, float perspectiveDist, bool addPersp);
 };
 
 #endif // PLANE_H

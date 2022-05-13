@@ -19,6 +19,9 @@ public:
     Point3(float x, float y, float z, float rad);
     Point3(float x, float y, float z, float rad, QColor color);
 
+    void Set(float x, float y, float z, float rad = 10, QColor color = Qt::yellow);
+    void Set(float3 pos, float rad = 10, QColor color = Qt::yellow);
+
     QRectF RectForPainter();
 
     // Object3D interface

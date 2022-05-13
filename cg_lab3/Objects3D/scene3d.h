@@ -30,6 +30,7 @@ public:
     decltype(elems.end()) end() {return elems.end();};
 
     QList<Object3D*> items();
+    QList<Camera*> cameras();
 
 public slots:
     void MoveRay(Ray &from, Ray &to);

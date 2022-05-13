@@ -17,7 +17,7 @@ Line3D::Line3D(float3 p1, float3 p2, QColor color)
 QGraphicsItemGroup *Line3D::DrawOnCameraView(Camera &cam)
 {
     MatrixF prLine = cam.ProjectOnScreen(this);
-    Line3D nLine;
+    Line3D nLine(p1,p2,color);
     nLine.FromMatrix(prLine);
 
 //    QGraphicsLineItem *line = new QGraphicsLineItem(nLine.p1.x, nLine.p1.y, nLine.p2.x, nLine.p2.y);

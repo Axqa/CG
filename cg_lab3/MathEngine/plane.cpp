@@ -52,6 +52,8 @@ vec Plane::Point(float u, float v) const
     vec b1, b2;
     normal.PerpendicularBasis(b1, b2);
     vec res = PointOnPlane() + b1 * u + b2 * v;
+//    qDebug() << "Point (" << u << v << ") on plane (" << normal << d << ") is (" << res << ")";
+//    qDebug() << "angle between {0,1,0} and b2:" << vec(0,1,0).AngleBetweenNorm(b2);
 //    res.y = - res.y;
     return res;
 }
@@ -78,7 +80,7 @@ void Plane::CalculateProjMatrix(float3 camPoint, float perspectiveDist, bool add
 
 //    qDebug() << "Normal: " << normal.x << normal.y << normal.z;
 
-    MatrixF move = MatrixF::MoveBy(-camPoint.x, -camPoint.y, -camPoint.z);
+    MatrixF move = MatrixF::MoveBy(camPoint.x, camPoint.y, camPoint.z);
 
     MatrixF persp = MatrixF::CreateEye(4);
 
@@ -102,6 +104,9 @@ void Plane::CalculateProjMatrix(float3 camPoint, float perspectiveDist, bool add
         angleX = cNorm.AngleBetween({0,0,1});
         if (normal.y < 0) angleX = -angleX;
 
+//        vec nx, ny;
+//        normal.PerpendicularBasis(nx,ny);
+//        qDebug() << cNorm.AngleBetween()
 //        cNorm.RotateAroundX(-angleX);
 //    }
 //    else {
@@ -144,4 +149,39 @@ void Plane::CalculateProjMatrix(float3 camPoint, float perspectiveDist, bool add
     MatrixF rotX = MatrixF::RotateX(angleX);
 //    MatrixF rotZ = MatrixF::RotateZ(-float3(normal.x, normal.y, 0).AngleBetween({1,0,0}));
     projMatrix = move*rotY*rotX*persp;
+}
+
+void Plane::CalculateProjMatrix2(float3 camPoint, float perspectiveDist, bool addPersp)
+{
+    vec camY, camX;
+//    vec negNorm = normal; negNorm.z *= -1;
+    vec curNorm = normal ;
+//    curNorm.z *= -1;
+    if (normal.z < 0){
+//        curNorm.z *= -1;
+    }
+    else {
+//        curNorm = negNorm;
+//         (negNorm).PerpendicularBasis(camY, camX);
+    }
+    curNorm.PerpendicularBasis(camX, camY);
+//    if (normal.z > 0) {
+//        camY *= -1;
+//    }
+    MatrixF rot ({
+                     {camX.x, camX.y, camX.z, 0},
+                     {camY.x, camY.y, camY.z, 0},
+                     {curNorm.x, curNorm.y, curNorm.z, 0},
+                     {0,0,0,1}
+    });
+
+    MatrixF move = MatrixF::MoveBy(-camPoint.x, -camPoint.y, -camPoint.z);
+
+    MatrixF persp = MatrixF::CreateEye(4);
+
+    if (addPersp) {
+        persp.at(2,3) = 1/perspectiveDist;
+    }
+
+    projMatrix = move * rot * persp;
 }

@@ -2,6 +2,7 @@
 #include "line3d.h"
 #include "../MathEngine/ray.h"
 #include "../MathEngine/Intersections.h"
+#include <functional>
 
 SelectablePoint::SelectablePoint()
 {
@@ -21,12 +22,12 @@ void SelectablePoint::initProj()
 QGraphicsItemGroup *SelectablePoint::DrawOnCameraView(Camera &cam)
 {
     MatrixF prPoint = cam.ProjectOnScreen(this);
-    SelectablePoint nPoint;
+    SelectablePoint nPoint (pos.x,pos.y,pos.z,rad,color);
 //    qDebug() << prPoint;
     nPoint.FromMatrix(prPoint);
 
     QGraphicsEllipseItem *el = new QGraphicsEllipseItem(nPoint.RectForPainter());
-    el->setPen(QColor(Qt::black));
+    el->setPen(QColor(selected ? Qt::white : Qt::black));
     el->setBrush(color);
     el->setZValue(nPoint.pos.z + nPoint.rad);
 
@@ -130,46 +131,51 @@ bool SelectablePoint::isIntersects(const Ray &ray, float &dist)
         return fl;
     }
 
+    struct dists{
+        float rayD;
+        float closD;
+        float rad;
+    } ;
+
+    std::vector<dists> vec(4);
+
     float dToC;
     float3 clToC = ray.ClosestPoint(pos, dToC);
     float sqdToC = clToC.DistanceSq(pos);
+    vec.push_back({dToC, sqdToC, rad});
+
     float dToX;
     float3 clToX = ray.ClosestPoint(projX.pos, dToX);
     float sqdToX = clToX.DistanceSq(projX.pos);
+    vec.push_back({dToX, sqdToX, projX.rad});
+
     float dToY;
     float3 clToY = ray.ClosestPoint(projY.pos, dToY);
     float sqdToY = clToY.DistanceSq(projY.pos);
+    vec.push_back({dToY, sqdToY, projY.rad});
+
     float dToZ;
     float3 clToZ = ray.ClosestPoint(projZ.pos, dToZ);
     float sqdToZ = clToZ.DistanceSq(projZ.pos);
+    vec.push_back({dToZ, sqdToZ, projZ.rad});
 
-    if (dToC < __min(__min(dToX,dToY),dToZ)) {
-        if (sqdToC < rad*rad * 4) {
-            qDebug() << "press in center";
-            return true;
-        }
-    }
-    if (dToX < __min(dToY, dToZ)) {
-        if (sqdToX < projX.rad * projX.rad * 4) {
-            qDebug() << "press in prX";
-            return true;
-        }
-    }
-    if (dToY < dToZ) {
-        if (sqdToY < projY.rad * projY.rad * 4) {
-            qDebug() << "press in prY";
-            return true;
-        }
+    qDebug() << "Dist to cent" << sqdToC << "rad" <<rad     << "D:" << dToC;
+    qDebug() << "Dist to x" << sqdToX << "rad" << projX.rad<< "D:" << dToX;
+    qDebug() << "Dist to y" << sqdToY<< "rad" << projY.rad<< "D:" << dToY;
+    qDebug() << "Dist to z" << sqdToZ<< "rad" << projZ.rad<< "D:" << dToZ;
 
-    }
-    if (1) {
-        if (sqdToZ < projZ.rad * projZ.rad * 4) {
-            qDebug() << "press in prZ";
+    std::sort(vec.begin(), vec.end(), [&](dists d1, dists d2) {return d1.rayD > d2.rayD;});
+
+    for (auto i : vec) {
+        if (i.closD < i.rad*i.rad) {
+            dist = i.rayD;
             return true;
         }
-
     }
+
     return false;
+
+
 
 
 }
@@ -181,93 +187,94 @@ void SelectablePoint::MovingRay(Ray &from, Ray &to)
         return;
     Ray ray = from;
 
+    struct dists{
+        float rayD;
+        float closD;
+        float rad;
+        std::function<void()>func;
+    } ;
+
+    std::vector<dists> vec(4);
+
     float dToC;
     float3 clToC = ray.ClosestPoint(pos, dToC);
     float sqdToC = clToC.DistanceSq(pos);
+    vec.push_back({dToC, sqdToC, rad, [&](){/*vec newPos = to.GetPoint(dToC)*/ /*+ (pos - clToC)*/;
+                                            pos = to.GetPoint(dToC);
+                                            initProj();
+                                            ObjectChanged();}});
 
     float dToX;
     float3 clToX = ray.ClosestPoint(projX.pos, dToX);
     float sqdToX = clToX.DistanceSq(projX.pos);
+    vec.push_back({dToX, sqdToX, projX.rad, [&](){/*vec newPos = to.GetPoint(dToC)*/ /*+ (pos - clToC)*/;
+                                                  float3 newPos;
+                                                  Plane plane({1,0,0},0);
+
+                                                  if (RayPlaneIntersection(to, plane, newPos)) {
+                                                      /*newPos = newPos + (projX.pos - clToX)*/;
+                                                      pos.y = newPos.y;
+                                                      pos.z = newPos.z;
+                                                      initProj();
+                                                      ObjectChanged();}
+                   }
+                  });
 
     float dToY;
     float3 clToY = ray.ClosestPoint(projY.pos, dToY);
     float sqdToY = clToY.DistanceSq(projY.pos);
+    vec.push_back({dToY, sqdToY, projY.rad, [&](){/*vec newPos = to.GetPoint(dToC)*/ /*+ (pos - clToC)*/;
+                                                  float3 newPos;
+                                                  Plane plane({0,1,0},0);
+
+                                                  if (RayPlaneIntersection(to, plane, newPos)) {
+                                                      /*newPos = newPos*/ /*+ (projY.pos - clToY)*/;
+                                                      pos.x = newPos.x;
+                                                      pos.z = newPos.z;
+                                                      initProj();
+                                                      ObjectChanged();
+                                                  }
+                   }
+                  });
 
     float dToZ;
     float3 clToZ = ray.ClosestPoint(projZ.pos, dToZ);
     float sqdToZ = clToZ.DistanceSq(projZ.pos);
+    vec.push_back({dToZ, sqdToZ, projZ.rad, [&](){/*vec newPos = to.GetPoint(dToC)*/ /*+ (pos - clToC)*/;
+                                                  float3 newPos;
+                                                  Plane plane({0,0,1},0);
 
-    if (dToC < __min(__min(dToX,dToY),dToZ)) {
-        qDebug() << "1" << sqdToC;
-        if (sqdToC < rad*rad*4) {
-            qDebug() << "1_2";
-            /// interact with center
-            vec newPos = to.GetPoint(dToC) /*+ (pos - clToC)*/;
-            pos = newPos;
-            initProj();
-            ObjectChanged();
+                                                  if (RayPlaneIntersection(to, plane, newPos)) {
+                                                      /*newPos = newPos*/ /*+ (projZ.pos - clToZ)*/;
+                                                      pos.y = newPos.y;
+                                                      pos.x = newPos.x;
+//                                                      qDebug() << "new sel point pos " << pos;
+                                                      initProj();
+                                                      ObjectChanged();
+                                                  }
+                   }
+                  });
+
+
+    if (sqdToC < rad*rad) {
+        pos = to.GetPoint(dToC);
+        initProj();
+        ObjectChanged();
+        return;
+    }
+
+    std::sort(vec.begin(), vec.end(), [&](dists d1, dists d2) {return d1.rayD > d2.rayD;});
+
+    for (auto i : vec) {
+        if (i.closD < i.rad*i.rad) {
+            i.func();
             return;
         }
     }
-    if (dToX < __min(dToY, dToZ)) {
-        qDebug() << "2" << sqdToX;
-        if (sqdToX < projX.rad * projX.rad*10) {
-            qDebug() << "2_2";
-            /// interact with projX
-            vec newPos;
-            Plane plane({1,0,0},0);
-
-            if (RayPlaneIntersection(to, plane, newPos)) {
-                newPos = newPos /*+ (projX.pos - clToX)*/;
-                pos.y = newPos.y;
-                pos.z = newPos.z;
-                initProj();
-                ObjectChanged();
-            }
-            return;
-        }
-    }
-    if (dToY < dToZ) {
-        qDebug() << "3" << sqdToY;
-        if (sqdToY < projY.rad * projY.rad*10) {
-            qDebug() << "3_2";
-            /// interact with projY
-            vec newPos;
-            Plane plane({0,1,0},0);
-
-            if (RayPlaneIntersection(to, plane, newPos)) {
-                newPos = newPos /*+ (projY.pos - clToY)*/;
-                pos.x = newPos.x;
-                pos.z = newPos.z;
-                initProj();
-                ObjectChanged();
-            }
-            return;
-        }
-
-    }
-    if (1) {
-        qDebug() << "4" << sqdToZ;
-        if (sqdToZ < projZ.rad * projZ.rad*10) {
-            qDebug() << "4_2";
-            /// interact with projZ
-            vec newPos;
-            Plane plane({0,0,1},0);
-
-            if (RayPlaneIntersection(to, plane, newPos)) {
-                newPos = newPos /*+ (projZ.pos - clToZ)*/;
-                pos.y = newPos.y;
-                pos.x = newPos.x;
-                qDebug() << "new pos " << pos;
-                initProj();
-                ObjectChanged();
-            }
-            return;
-        }
-
-    }
-
     return;
+
+
+
 }
 
 float SelectablePoint::MousePressRay(Ray &ray)
