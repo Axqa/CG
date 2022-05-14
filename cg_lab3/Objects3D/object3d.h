@@ -21,6 +21,9 @@ class Object3D : public QObject
 {
     Q_OBJECT
 public:
+
+    bool visible = true;
+
     Object3D();
 
     virtual QGraphicsItemGroup* DrawOnCameraView(Camera& cam) =0;

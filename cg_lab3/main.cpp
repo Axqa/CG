@@ -6,6 +6,7 @@
 #include "Objects3D/point3.h"
 #include "Objects3D/line3d.h"
 #include "Objects3D/selectablepoint.h"
+#include "Objects3D/bezierplane.h"
 #include "styleloader.h"
 #include <QDebug>
 
@@ -34,8 +35,18 @@ int main( int argc, char **argv ) {
     scene->addObject(new Line3D({0,0,0}, {0,200,0}, QColor(Qt::red)));
     scene->addObject(new Line3D({0,0,0}, {0,0,200}, QColor(Qt::blue)));
 
-    scene->addObject(new SelectablePoint(50,50,50));
-    scene->addObject(new SelectablePoint(100,50,50));
+//    scene->addObject(new SelectablePoint(50,50,50, 5));
+//    scene->addObject(new SelectablePoint(100,50,50, 10));
+
+    auto bPlane = new BezierPlane();
+    scene->addObject(bPlane);
+
+    QObject::connect(&w, &MainWindow::SetM, bPlane, &BezierPlane::setM);
+    QObject::connect(&w, &MainWindow::SetN, bPlane, &BezierPlane::setN);
+    QObject::connect(&w, &MainWindow::XSlider, bPlane, &BezierPlane::RotateXDeg);
+    QObject::connect(&w, &MainWindow::YSlider, bPlane, &BezierPlane::RotateYDeg);
+    QObject::connect(&w, &MainWindow::ZSlider, bPlane, &BezierPlane::RotateZDeg);
+    QObject::connect(&w, &MainWindow::SetShowControlLines, bPlane, &BezierPlane::SetShowLines);
 
 //    scene->addObject(new Line3D(float3{1,0,0} * cam->plane.d,
 //                                float3{0,1,0} * cam->plane.d));

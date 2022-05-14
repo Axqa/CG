@@ -15,15 +15,15 @@ class Scene3D : public QObject
 public:
     QList <Object3D*> elems;
     QList <Camera*> cams;
-    QList <SelectablePoint*> selectables;
+    QList <Selectable*> selectables;
 
-    SelectablePoint* selected = nullptr;
+    Selectable* selected = nullptr;
 public:
     Scene3D();
     ~Scene3D();
 
-    void addObject(Object3D *el);
-    void addCamera(Camera *cam);
+    Object3D * addObject(Object3D *el);
+    Camera * addCamera(Camera *cam);
 
     // to have foreach-like loop
     decltype(elems.begin()) begin() {return elems.begin();};

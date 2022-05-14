@@ -15,9 +15,11 @@ SOURCES += \
     MathEngine/matrix.cpp \
     MathEngine/plane.cpp \
     MathEngine/ray.cpp \
+    Objects3D/bezierplane.cpp \
     Objects3D/camera.cpp \
     Objects3D/line3d.cpp \
     Objects3D/object3d.cpp \
+    Objects3D/objectgroup.cpp \
     Objects3D/point3.cpp \
     Objects3D/scene3d.cpp \
     Objects3D/selectable.cpp \
@@ -33,6 +35,7 @@ HEADERS += \
     MathEngine/Intersections.h \
     MathEngine/MathAll.h \
     MathEngine/MathConstants.h \
+    MathEngine/beziermath.h \
     MathEngine/float2.h \
     MathEngine/float3.h \
     MathEngine/float4.h \
@@ -41,10 +44,12 @@ HEADERS += \
     MathEngine/plane.h \
     MathEngine/ray.h \
     MathEngine/somemath.h \
+    Objects3D/bezierplane.h \
     Objects3D/camera.h \
     Objects3D/clss.h \
     Objects3D/line3d.h \
     Objects3D/object3d.h \
+    Objects3D/objectgroup.h \
     Objects3D/point3.h \
     Objects3D/scene3d.h \
     Objects3D/selectable.h \

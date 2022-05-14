@@ -17,6 +17,7 @@ CustomGraphicsScene::CustomGraphicsScene(QObject *parent) : QGraphicsScene(paren
 CustomGraphicsScene::~CustomGraphicsScene()
 {
 //    qApp->removeEventFilter(this);
+    qDebug() << "deleting elems" << items().size();
     for (auto i : items()) {
         delete i;
     }
@@ -77,7 +78,7 @@ void CustomGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void CustomGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
 {
-//    qDebug() << "Wheel event";
+//    qDebug() << "Wheel event" ;
 }
 
 

@@ -25,14 +25,14 @@ Camera::Camera(Plane p)
 
 Camera::~Camera()
 {
-//    delete cam;
+    delete cam;
 //    delete scene;
 }
 
 CustomGraphicsScene *Camera::CameraView()
 {
     CustomGraphicsScene *gScene = new CustomGraphicsScene();
-    gScene->setSceneRect(-400,-400,800, 800);
+    gScene->setSceneRect(-400,-300,800, 600);
 
     connect(gScene, &CustomGraphicsScene::mouseMove, this, &Camera::mouseMove);
     connect(gScene, &CustomGraphicsScene::mousePress, this, &Camera::mousePress);
@@ -41,14 +41,17 @@ CustomGraphicsScene *Camera::CameraView()
     QElapsedTimer timer;
     timer.start();
     for (auto i: scene->items()) {
-        for (auto j : i->DrawOnCameraView(*this)->childItems())
+        auto group = i->DrawOnCameraView(*this);
+        for (auto j : group->childItems())
             gScene->addItem(j);
-//        gScene->addItem(i->DrawOnCameraView(*this));
-
+//        qDebug() << group;
+        delete group;
     }
     for (auto i : extraItems) {
-        for (auto j : i->DrawOnCameraView(*this)->childItems())
+        auto group = i->DrawOnCameraView(*this);
+        for (auto j : group->childItems())
                 gScene->addItem(j);
+        delete group;
     }
 
     // Camera point
@@ -57,8 +60,8 @@ CustomGraphicsScene *Camera::CameraView()
 
     if (cam){
 //        qDebug() << "try add camera";
-        for (auto j : cam->DrawOnCameraView(*this)->childItems())
-                gScene->addItem(j);
+//        for (auto j : cam->DrawOnCameraView(*this)->childItems())
+//                gScene->addItem(j);
 //        gScene->addItem(cam->DrawOnCameraView(*this));
     }
 
@@ -80,10 +83,14 @@ Ray Camera::CastRayFromPoint(QPointF point)
 //        x *= -1;
 //        y *= -1;
 //    }
+    Plane p;
+    p.normal = plane.normal;
+    p.d = 1000;
     float3 onPlane = plane.Point(x, y);
 //    qDebug() << point <<  "point in casting" << onPlane << "dir" << plane.normal * -1;
     if (!addPerspective){
-        return Ray(onPlane, plane.normal * -1);
+        return Ray(p.Point(x,y) + camPoint, plane.normal * -1);
+//        return Ray(onPlane, plane.normal * -1);
     } else {
         float3 viewPoint = plane.normal * (plane.d - camDist);
         return Ray(viewPoint, -(viewPoint - onPlane).Normalized());
@@ -103,7 +110,7 @@ void Camera::mousePress(Qt::MouseButton btn, QPointF pos)
     if (btn & Qt::MouseButton::LeftButton) {
         qDebug() << "Mouse press in space:" << plane.Point(pos.x(),pos.y());
         Ray ray = CastRayFromPoint(pos);
-        extraItems << new Line3D(ray.pos, ray.GetPoint(1000));
+//        extraItems << new Line3D(ray.pos, ray.GetPoint(1000));
         MousePress(ray);
     }
     if (btn & Qt::MouseButton::MidButton) {

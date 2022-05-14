@@ -89,6 +89,7 @@ Matrix<T>::~Matrix()
 template<typename T>
 void Matrix<T>::FreeData()
 {
+
     data.clear();
 }
 
@@ -357,6 +358,39 @@ Matrix<T> Matrix<T>::NormalizedW()
 }
 
 template<typename T>
+Matrix<T> &Matrix<T>::MergeVer(const Matrix<T> &oth)
+{
+
+    massert(colCount == oth.colCount, "Cols count must equal");
+
+    data.resize(data.size() + oth.data.size());
+
+
+    for (u32 i = 0; i < oth.data.size(); ++i) {
+        data[rowCount * colCount + i] = oth.data[i];
+    }
+
+    rowCount += oth.rowCount;
+
+    return *this;
+}
+
+template<typename T>
+Matrix<T> Matrix<T>::MatrixPart(u32 stRow, u32 rowC)
+{
+    massert(stRow+rowC <= rowCount, "Row out of index");
+
+    Matrix<T> res(rowC, colCount);
+
+    for (u32 rIdx = 0; rIdx < rowC; ++rIdx) {
+        for (u32 cIdx = 0; cIdx < res.colCount; ++cIdx) {
+            res.at(rIdx, cIdx) = at(stRow + rIdx, cIdx);
+        }
+    }
+    return res;
+}
+
+template<typename T>
 Matrix<T>::operator QString() const
 {
     QString res;
@@ -364,8 +398,9 @@ Matrix<T>::operator QString() const
         for (u32 j = 0; j < colCount; ++j) {
             res += QString::number( at(i,j))  +  " ";
         }
-        res += "\n";
+        res += QString::fromStdString("\n");
     }
+    return res;
 }
 
 template <typename T>

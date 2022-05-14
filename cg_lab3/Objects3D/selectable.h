@@ -14,6 +14,7 @@ public:
     /// if intersects, return true and set dist to distance from ray origin to intersection point
     virtual bool isIntersects(const Ray &ray, float &dist) = 0;
 
+    virtual void MovingRay(Ray &from, Ray &to) = 0;
 protected:
     bool selected;
 };

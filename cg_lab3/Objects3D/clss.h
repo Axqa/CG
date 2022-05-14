@@ -8,5 +8,7 @@ class Scene3D;
 class Line3D;
 class Selectable;
 class SelectablePoint;
+class ObjectGroup;
+class BezierPlane;
 
 #endif // CLSS_H

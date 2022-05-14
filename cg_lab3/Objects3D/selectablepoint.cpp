@@ -25,57 +25,61 @@ QGraphicsItemGroup *SelectablePoint::DrawOnCameraView(Camera &cam)
     SelectablePoint nPoint (pos.x,pos.y,pos.z,rad,color);
 //    qDebug() << prPoint;
     nPoint.FromMatrix(prPoint);
+    nPoint.selected = selected;
+//    if (!visible) {
+//        return new QGraphicsItemGroup();
+//    }
 
-    QGraphicsEllipseItem *el = new QGraphicsEllipseItem(nPoint.RectForPainter());
-    el->setPen(QColor(selected ? Qt::white : Qt::black));
-    el->setBrush(color);
-    el->setZValue(nPoint.pos.z + nPoint.rad);
+//    QGraphicsEllipseItem *el = new QGraphicsEllipseItem(nPoint.RectForPainter());
+//    el->setPen(QColor(selected ? Qt::white : Qt::black));
+//    el->setBrush(color);
+//    el->setZValue(nPoint.pos.z + nPoint.rad);
 
-    QGraphicsItemGroup *group = new QGraphicsItemGroup();
-    itemOnScene = group;
+//    QGraphicsItemGroup *group = new QGraphicsItemGroup();
+//    itemOnScene = group;
 
-    group->addToGroup(el);
+//    group->addToGroup(el);
 
-    if (selected) {
-        QGraphicsEllipseItem *prX = new QGraphicsEllipseItem(nPoint.projX.RectForPainter());
-        prX->setPen(QColor(Qt::black));
-        prX->setBrush(projColor);
-        prX->setZValue(nPoint.projX.pos.z + nPoint.projX.rad);
-        group->addToGroup(prX);
-        QGraphicsEllipseItem *prY = new QGraphicsEllipseItem(nPoint.projY.RectForPainter());
-        prY->setPen(QColor(Qt::black));
-        prY->setBrush(projColor);
-        prY->setZValue(nPoint.projY.pos.z + nPoint.projY.rad);
-        group->addToGroup(prY);
-        QGraphicsEllipseItem *prZ = new QGraphicsEllipseItem(nPoint.projZ.RectForPainter());
-        prZ->setPen(QColor(Qt::black));
-        prZ->setBrush(projColor);
-        prZ->setZValue(nPoint.projZ.pos.z + nPoint.projZ.rad);
-        group->addToGroup(prZ);
+//    if (selected) {
+//        QGraphicsEllipseItem *prX = new QGraphicsEllipseItem(nPoint.projX.RectForPainter());
+//        prX->setPen(QColor(Qt::black));
+//        prX->setBrush(projColor);
+//        prX->setZValue(nPoint.projX.pos.z + nPoint.projX.rad);
+//        group->addToGroup(prX);
+//        QGraphicsEllipseItem *prY = new QGraphicsEllipseItem(nPoint.projY.RectForPainter());
+//        prY->setPen(QColor(Qt::black));
+//        prY->setBrush(projColor);
+//        prY->setZValue(nPoint.projY.pos.z + nPoint.projY.rad);
+//        group->addToGroup(prY);
+//        QGraphicsEllipseItem *prZ = new QGraphicsEllipseItem(nPoint.projZ.RectForPainter());
+//        prZ->setPen(QColor(Qt::black));
+//        prZ->setBrush(projColor);
+//        prZ->setZValue(nPoint.projZ.pos.z + nPoint.projZ.rad);
+//        group->addToGroup(prZ);
 
-        QList<Line3D*> lines ({
-                                  new Line3D(nPoint.pos, nPoint.projX.pos),
-                                  new Line3D(nPoint.pos, nPoint.projY.pos),
-                                  new Line3D(nPoint.pos, nPoint.projZ.pos),
-                                  new Line3D(nPoint.unitX.pos, nPoint.projZ.pos),
-                                  new Line3D(nPoint.unitY.pos, nPoint.projZ.pos),
-                                  new Line3D(nPoint.unitX.pos, nPoint.projY.pos),
-                                  new Line3D(nPoint.unitZ.pos, nPoint.projY.pos),
-                                  new Line3D(nPoint.unitY.pos, nPoint.projX.pos),
-                                  new Line3D(nPoint.unitZ.pos, nPoint.projX.pos),
-        });
-
-
-        for (auto i : lines) {
-            i->LineToSegments(i->p1, i->p2, 10, QPen(supColor, 1), group);
-        }
-        for (auto i : lines) {
-            delete i;
-        }
-    }
+//        QList<Line3D*> lines ({
+//                                  new Line3D(nPoint.pos, nPoint.projX.pos),
+//                                  new Line3D(nPoint.pos, nPoint.projY.pos),
+//                                  new Line3D(nPoint.pos, nPoint.projZ.pos),
+//                                  new Line3D(nPoint.unitX.pos, nPoint.projZ.pos),
+//                                  new Line3D(nPoint.unitY.pos, nPoint.projZ.pos),
+//                                  new Line3D(nPoint.unitX.pos, nPoint.projY.pos),
+//                                  new Line3D(nPoint.unitZ.pos, nPoint.projY.pos),
+//                                  new Line3D(nPoint.unitY.pos, nPoint.projX.pos),
+//                                  new Line3D(nPoint.unitZ.pos, nPoint.projX.pos),
+//        });
 
 
-    return group;
+//        for (auto i : lines) {
+//            i->LineToSegments(i->p1, i->p2, 10, QPen(supColor, 1), group);
+//        }
+//        for (auto i : lines) {
+//            delete i;
+//        }
+//    }
+
+
+    return nPoint.ToGraphGroup();
 }
 
 MatrixF SelectablePoint::ToMatrix()
@@ -115,6 +119,64 @@ void SelectablePoint::FromMatrix(MatrixF m)
 
 void SelectablePoint::Normalize()
 {
+}
+
+QGraphicsItemGroup *SelectablePoint::ToGraphGroup()
+{
+    if (!visible) {
+        return new QGraphicsItemGroup();
+    }
+
+    QGraphicsEllipseItem *el = new QGraphicsEllipseItem(RectForPainter());
+    el->setPen(QColor(selected ? Qt::white : Qt::black));
+    el->setBrush(color);
+    el->setZValue(pos.z + rad);
+
+    QGraphicsItemGroup *group = new QGraphicsItemGroup();
+    itemOnScene = group;
+
+    group->addToGroup(el);
+
+    if (selected) {
+        QGraphicsEllipseItem *prX = new QGraphicsEllipseItem(projX.RectForPainter());
+        prX->setPen(QColor(Qt::black));
+        prX->setBrush(projColor);
+        prX->setZValue(projX.pos.z + projX.rad);
+        group->addToGroup(prX);
+        QGraphicsEllipseItem *prY = new QGraphicsEllipseItem(projY.RectForPainter());
+        prY->setPen(QColor(Qt::black));
+        prY->setBrush(projColor);
+        prY->setZValue(projY.pos.z + projY.rad);
+        group->addToGroup(prY);
+        QGraphicsEllipseItem *prZ = new QGraphicsEllipseItem(projZ.RectForPainter());
+        prZ->setPen(QColor(Qt::black));
+        prZ->setBrush(projColor);
+        prZ->setZValue(projZ.pos.z + projZ.rad);
+        group->addToGroup(prZ);
+
+        QList<Line3D*> lines ({
+                                  new Line3D(pos,       projX.pos),
+                                  new Line3D(pos,       projY.pos),
+                                  new Line3D(pos,       projZ.pos),
+                                  new Line3D(unitX.pos, projZ.pos),
+                                  new Line3D(unitY.pos, projZ.pos),
+                                  new Line3D(unitX.pos, projY.pos),
+                                  new Line3D(unitZ.pos, projY.pos),
+                                  new Line3D(unitY.pos, projX.pos),
+                                  new Line3D(unitZ.pos, projX.pos),
+        });
+
+
+        for (auto i : lines) {
+            i->LineToSegments(i->p1, i->p2, 10, QPen(supColor, 1), group);
+        }
+        for (auto i : lines) {
+            delete i;
+        }
+    }
+
+
+    return group;
 }
 
 void SelectablePoint::setSelected(bool state)

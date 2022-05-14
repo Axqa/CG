@@ -39,17 +39,19 @@ public:
     void FromMatrix(MatrixF m) override;
     void Normalize() override;
 
+    QGraphicsItemGroup* ToGraphGroup();
+
     // Selectable interface
 public:
     void setSelected(bool state) override;
     bool isIntersects(const Ray &ray, float &dist) override;
 
+    void MovingRay(Ray &from, Ray &to) override;
 public slots:
-    void MovingRay(Ray &from, Ray &to);
     float MousePressRay(Ray &ray);
 signals:
     void SelectionChanged(bool state);
-
+    void PosChanged(vec pos);
 
 };
 

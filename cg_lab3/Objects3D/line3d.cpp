@@ -1,4 +1,5 @@
 #include "line3d.h"
+#include "../MathEngine/somemath.h"
 
 Line3D::Line3D()
 {
@@ -20,11 +21,18 @@ QGraphicsItemGroup *Line3D::DrawOnCameraView(Camera &cam)
     Line3D nLine(p1,p2,color);
     nLine.FromMatrix(prLine);
 
+    if (!visible) {
+        return new QGraphicsItemGroup();
+    }
+
 //    QGraphicsLineItem *line = new QGraphicsLineItem(nLine.p1.x, nLine.p1.y, nLine.p2.x, nLine.p2.y);
 
 //    line->setPen(QPen(QColor(color),2));
 
 //    QGraphicsItemGroup *group = new QGraphicsItemGroup();
+    float dx = p1.x - p2.x;
+    float dy = p1.y - p2.y;
+    int lineSegmCount =  Sqrt(dx*dx + dy*dy);
     QGraphicsItemGroup *group = LineToSegments(nLine.p1, nLine.p2, 100, QPen(QColor(color),2));
 //    group->addToGroup(line);
 

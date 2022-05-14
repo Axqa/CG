@@ -18,14 +18,6 @@ QSlider::handle:horizontal {
 
 QSlider::handle:horizontal:hover {
         border-radius: 5px;
-        border: 2px solid black
-}
-QSlider::add-page:horizontal {
-    background-color: white;
-    border: 1px solid black;
+        border: 1px solid black
 }
 
-QSlider::sub-page:horizontal {
-    background-color: orange;
-    border: 1px solid black;
-}

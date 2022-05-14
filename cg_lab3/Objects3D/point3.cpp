@@ -50,6 +50,10 @@ QGraphicsItemGroup* Point3::DrawOnCameraView(Camera &cam)
     Point3 nPoint (pos.x,pos.y,pos.z,rad,color);
     nPoint.FromMatrix(prPoint);
 
+    if (!visible) {
+        return new QGraphicsItemGroup();
+    }
+
     QGraphicsEllipseItem *el = new QGraphicsEllipseItem(nPoint.RectForPainter());
 
     el->setPen(QColor(Qt::black));

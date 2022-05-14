@@ -80,7 +80,7 @@ void Plane::CalculateProjMatrix(float3 camPoint, float perspectiveDist, bool add
 
 //    qDebug() << "Normal: " << normal.x << normal.y << normal.z;
 
-    MatrixF move = MatrixF::MoveBy(camPoint.x, camPoint.y, camPoint.z);
+    MatrixF move = MatrixF::MoveBy(-camPoint.x, -camPoint.y, -camPoint.z);
 
     MatrixF persp = MatrixF::CreateEye(4);
 

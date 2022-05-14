@@ -26,7 +26,7 @@ public:
     void FromMatrix(Matrix<float> m) override;
     void Normalize() override;
 
-    QGraphicsItemGroup* LineToSegments(const float3 &p1, const float3 &p2, int segmCount, QPen pen,QGraphicsItemGroup *group = nullptr);
+    static QGraphicsItemGroup* LineToSegments(const float3 &p1, const float3 &p2, int segmCount, QPen pen,QGraphicsItemGroup *group = nullptr);
 
 
 };
