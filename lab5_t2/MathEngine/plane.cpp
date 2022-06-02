@@ -104,6 +104,47 @@ void Plane::CalculateProjMatrix(float3 camPoint, float perspectiveDist, bool add
         angleX = cNorm.AngleBetween({0,0,1});
         if (normal.y < 0) angleX = -angleX;
 
+//        vec nx, ny;
+//        normal.PerpendicularBasis(nx,ny);
+//        qDebug() << cNorm.AngleBetween()
+//        cNorm.RotateAroundX(-angleX);
+//    }
+//    else {
+//        if (!x0z.IsZero()) {
+//            angleY = x0z.AngleBetween({0,0,-1});
+//            if (normal.x < 0) angleY *= -1;
+//        }
+//        cNorm.RotateAroundY(-angleY);
+//    //    qDebug() << "after 1st rot:" << cNorm;
+//        angleX = cNorm.AngleBetween({0,0,-1});
+//        if (normal.y > 0) angleX *= -1;
+
+//        cNorm.RotateAroundX(-angleX);
+//    }
+
+//    qDebug() << "after 2nd rot:" << cNorm;
+//    cNorm.RotateAroundX(angleX);
+//    vec yz0 = normal; yz0.x = 0;
+//    if (yz0.IsZero())
+//        angleAroundX = 0;
+//    else {
+//        angleAroundX = yz0.AngleBetween({0,0,1});
+//        if (normal.y < 0) angleAroundX *= -1;
+//    }
+//    vec xz0 = normal; xz0.y = 0;
+//    if (xz0.IsZero())
+//        angleAroundY = 0;
+//    else {
+//        angleAroundY = xz0.AngleBetween({0,0,1});
+//        if (normal.x > 0) angleAroundY *= -1;
+
+//    }
+//    if (normal.z < 0) {
+////        angleAroundX *= -1;
+////        angleAroundY *= -1;
+//    }
+//    qDebug() << "rot for z:" << float3(normal.x, normal.y, 0).AngleBetween({1,0,0});
+//    qDebug() << "rot (arX, arY):" << ToDeg(angleX) << ToDeg(angleY);
     MatrixF rotY = MatrixF::RotateY(angleY);
     MatrixF rotX = MatrixF::RotateX(angleX);
 //    MatrixF rotZ = MatrixF::RotateZ(-float3(normal.x, normal.y, 0).AngleBetween({1,0,0}));
