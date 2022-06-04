@@ -10,9 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+    ui->imageLabel->setScaledContents(true);
+    ui->imageLabel->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored );
 
-
-    setMouseTracking(true);
+//    setMouseTracking(true);
 }
 
 MainWindow::~MainWindow()
@@ -38,10 +39,25 @@ void MainWindow::init(Scene3D* scene) {
     connect(z, &Graphics_view_zoom::zoomedRect, &mainCam->sImage, &SceneImage::ChangeSceneRect);
 
     QPolygonF pol = ui->graphicsView->mapToScene(ui->graphicsView->rect());
-    mainCam->sImage.rect = QRectF(pol.at(0), pol.at(2));
-    mainCam->sImage.viewRect = ui->graphicsView->rect();
+    mainCam->sImage.rect = QRectF(-300,-200,600,400);
+//    mainCam->sImage.rect.moveCenter(mainCam->sImage.rect.center());
+    qDebug() << "image.rect in init" << mainCam->sImage.rect << "label rect" << ui->imageLabel->rect();
+    mainCam->sImage.viewRect = ui->imageLabel->rect();
+    qDebug() << "image viewRect" << mainCam->sImage.viewRect ;
+    initConnections();
 
     UpdateView();
+}
+
+void MainWindow::initConnections()
+{
+    connect(ui->imageLabel, &ImageLabel::mousePress   , mainCam, &Camera::labelMousePress   );
+    connect(ui->imageLabel, &ImageLabel::mouseRelease , mainCam, &Camera::labelMouseRelease );
+    connect(ui->imageLabel, &ImageLabel::mouseMove    , mainCam, &Camera::labelMouseMove    );
+    connect(ui->imageLabel, &ImageLabel::wheel        , mainCam, &Camera::labelWheel        );
+    connect(ui->imageLabel, &ImageLabel::keyPress     , mainCam, &Camera::labelKeyPress     );
+    connect(ui->imageLabel, &ImageLabel::keyRelease   , mainCam, &Camera::labelKeyRelease   );
+    connect(ui->imageLabel, &ImageLabel::resize       , mainCam, &Camera::labelResize       );
 }
 
 void MainWindow::UpdateView()
@@ -58,16 +74,23 @@ void MainWindow::UpdateView()
     QRect tmp = ui->graphicsView->viewport()->rect();
     QRect pixMapRect = QRect(ui->graphicsView->mapToScene(tmp.bottomLeft()).toPoint(),
                              ui->graphicsView->mapToScene(tmp.topRight()).toPoint());
-    qDebug() << "set rect of image" << pol << "rect" << pixMapRect;
+//    qDebug() << "set rect of image" << pol << "rect" << pixMapRect;
 
 
-    auto pm = scene->addPixmap(QPixmap::fromImage(mainCam->sImage.image.scaled(
-                                                      pixMapRect.width(),
-                                                      pixMapRect.height(),
-                                                      Qt::KeepAspectRatioByExpanding)));
-    pm->setX(-pixMapRect.width()/2);
-    pm->setY(-pixMapRect.height()/2);
+//    auto pm = scene->addPixmap(QPixmap::fromImage(mainCam->sImage.image.scaled(
+//                                                      pixMapRect.width(),
+//                                                      pixMapRect.height(),
+//                                                      Qt::KeepAspectRatioByExpanding)));
+//    pm->setX(-pixMapRect.width()/2);
+//    pm->setY(-pixMapRect.height()/2);
 
+
+    ui->imageLabel->setPixmap(QPixmap::fromImage(mainCam->sImage.image.scaled(
+                                                     ui->imageLabel->width(),
+                                                     ui->imageLabel->height(),
+                                                     Qt::KeepAspectRatio)));
+//    qDebug() << "View update";
+    ui->imageLabel->update();
     ui->graphicsView->update();
 //    ui->graphicsView->viewport()->installEventFilter(scene);
 }
@@ -193,6 +216,6 @@ QPaintEngine *MainWindow::paintEngine() const
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     QMainWindow::resizeEvent(event);
-    mainCam->sImage.viewRect = ui->graphicsView->viewport()->rect();
+//    mainCam->sImage.viewRect = ui->graphicsView->viewport()->rect();
     UpdateView();
 }

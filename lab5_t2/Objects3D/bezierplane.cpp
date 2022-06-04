@@ -214,10 +214,10 @@ QGraphicsItemGroup *BezierPlane::DrawOnCameraView(Camera &cam)
 
     for (auto row : p.controlPoints) {
         for (auto el : row) {
-            auto curGr = el->ToGraphGroup();
-            for (auto item : curGr->childItems()) {
-                group->addToGroup(item);
-            }
+            auto curGr = el->ToGraphGroup(cam);
+//            for (auto item : curGr->childItems()) {
+//                group->addToGroup(item);
+//            }
             delete curGr;
 
         }
@@ -227,16 +227,20 @@ QGraphicsItemGroup *BezierPlane::DrawOnCameraView(Camera &cam)
         for (int i = 0; i < n+1; ++i) {
             for (int j = 0; j < m+1; ++j) {
                 if (i > 0){
-                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i-1][j]->pos, 2, QPen(QColor(Qt::white),1), group);
+//                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i-1][j]->pos, 2, QPen(QColor(Qt::white),1), group);
+                    cam.sImage.DrawLine(p.controlPoints[i][j]->pos, p.controlPoints[i-1][j]->pos, QColor(Qt::white), 1);
                 }
                 if (i < n){
-                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i+1][j]->pos, 2, QPen(QColor(Qt::white),1), group);
+//                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i+1][j]->pos, 2, QPen(QColor(Qt::white),1), group);
+                    cam.sImage.DrawLine(p.controlPoints[i][j]->pos, p.controlPoints[i+1][j]->pos, QColor(Qt::white), 1);
                 }
                 if (j > 0){
-                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i][j-1]->pos, 2, QPen(QColor(Qt::white),1), group);
+//                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i][j-1]->pos, 2, QPen(QColor(Qt::white),1), group);
+                    cam.sImage.DrawLine(p.controlPoints[i][j]->pos, p.controlPoints[i][j-1]->pos, QColor(Qt::white), 1);
                 }
                 if (j < m){
-                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i][j+1]->pos, 2, QPen(QColor(Qt::white),1), group);
+//                    Line3D::LineToSegments(p.controlPoints[i][j]->pos, p.controlPoints[i][j+1]->pos, 2, QPen(QColor(Qt::white),1), group);
+                    cam.sImage.DrawLine(p.controlPoints[i][j]->pos, p.controlPoints[i][j+1]->pos, QColor(Qt::white), 1);
                 }
             }
         }
@@ -246,20 +250,24 @@ QGraphicsItemGroup *BezierPlane::DrawOnCameraView(Camera &cam)
         for (int j = 0; j < p.mSub; ++j) {
 //            qDebug() << p.surfPoints[i][j];
             if (i > 0){
-                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i-1][j], 2, QPen(QColor(Qt::black),1), group);
+//                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i-1][j], 2, QPen(QColor(Qt::black),1), group);
+                cam.sImage.DrawLine(p.surfPoints[i][j], p.surfPoints[i-1][j], QColor(Qt::black), 1);
             }
             if (i < p.nSub-1){
-                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i+1][j], 2, QPen(QColor(Qt::black),1), group);
+//                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i+1][j], 2, QPen(QColor(Qt::black),1), group);
+                cam.sImage.DrawLine(p.surfPoints[i][j], p.surfPoints[i+1][j], QColor(Qt::black), 1);
             }
             if (j > 0){
-                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i][j-1], 2, QPen(QColor(Qt::black),1), group);
+//                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i][j-1], 2, QPen(QColor(Qt::black),1), group);
+                cam.sImage.DrawLine(p.surfPoints[i][j], p.surfPoints[i][j-1], QColor(Qt::black), 1);
             }
             if (j < p.mSub-1){
-                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i][j+1], 2, QPen(QColor(Qt::black),1), group);
+//                Line3D::LineToSegments(p.surfPoints[i][j], p.surfPoints[i][j+1], 2, QPen(QColor(Qt::black),1), group);
+                cam.sImage.DrawLine(p.surfPoints[i][j], p.surfPoints[i][j+1], QColor(Qt::black), 1);
             }
         }
     }
-    qDebug() << "after lines";
+//    qDebug() << "after lines";
 
     return group;
 }

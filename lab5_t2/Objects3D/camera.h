@@ -34,6 +34,9 @@ public:
     SceneImage sImage;
     QGraphicsPixmapItem *pm = nullptr;
 
+    QPoint lastPos;
+    QPointF target_scene_pos, target_viewport_pos;
+
 public:
     Camera();
     Camera(Plane p);
@@ -42,15 +45,27 @@ public:
     CustomGraphicsScene* CameraView();
     MatrixF ProjectOnScreen(Object3D *obj);
 
+    QPoint MapToImage(QPointF pointOnLabel);
+
 private:
     /// Creates ray through point according to [non-]perspective view
     Ray CastRayFromPoint(QPointF point);
+
+    void gentle_zoom(double factor, QPointF pos);
 
 public slots:
     void SceneChanged();
     void mousePress(Qt::MouseButton btn, QPointF pos);
     void mouseRelease(Qt::MouseButton btn);
     void mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to);
+
+    void labelMousePress(QMouseEvent *event)  ;
+    void labelMouseRelease(QMouseEvent *event);
+    void labelMouseMove(QMouseEvent *event)   ;
+    void labelWheel(QWheelEvent *event)       ;
+    void labelKeyPress(QKeyEvent *event)      ;
+    void labelKeyRelease(QKeyEvent *event)    ;
+    void labelResize(QResizeEvent *event)     ;
 
 signals:
     void ViewChanged();

@@ -21,6 +21,7 @@ public:
     ~MainWindow();
 
     void init(Scene3D* scene);
+    void initConnections();
 
 public slots:
     void UpdateView();

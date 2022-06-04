@@ -23,13 +23,13 @@ int main( int argc, char **argv ) {
     w.init(scene);
     w.show();
 
-//    scene->addObject(new Point3(0,0,0, 5, QColor(Qt::black)));
-//    scene->addObject(new Point3(50,0,0));
-//    scene->addObject(new Point3(100,0,0, QColor(Qt::green)));
-//    scene->addObject(new Point3(0,50,0));
-//    scene->addObject(new Point3(0,100,0, QColor(Qt::red)));
-//    scene->addObject(new Point3(0,0,50));
-//    scene->addObject(new Point3(0,0,100, QColor(Qt::blue)));
+    scene->addObject(new Point3(0,0,0, 5, QColor(Qt::black)));
+    scene->addObject(new Point3(50,0,0));
+    scene->addObject(new Point3(100,0,0, QColor(Qt::green)));
+    scene->addObject(new Point3(0,50,0));
+    scene->addObject(new Point3(0,100,0, QColor(Qt::red)));
+    scene->addObject(new Point3(0,0,50));
+    scene->addObject(new Point3(0,0,100, QColor(Qt::blue)));
 
     scene->addObject(new Line3D({0,0,0}, {200,0,0}, QColor(Qt::green)));
     scene->addObject(new Line3D({0,0,0}, {0,200,0}, QColor(Qt::red)));

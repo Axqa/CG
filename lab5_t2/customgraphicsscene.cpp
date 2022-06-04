@@ -17,7 +17,7 @@ CustomGraphicsScene::CustomGraphicsScene(QObject *parent) : QGraphicsScene(paren
 CustomGraphicsScene::~CustomGraphicsScene()
 {
 //    qApp->removeEventFilter(this);
-    qDebug() << "deleting elems" << items().size();
+//    qDebug() << "deleting elems" << items().size();
     for (auto i : items()) {
         delete i;
     }

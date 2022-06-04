@@ -13,7 +13,7 @@ public:
     Point3 projX;
     Point3 projY;
     Point3 projZ;
-    float projRad = 5;
+    float projRad = 3;
     QColor projColor = Qt::gray;
     QColor projLineCol = Qt::yellow;
 
@@ -39,7 +39,7 @@ public:
     void FromMatrix(MatrixF m) override;
     void Normalize() override;
 
-    QGraphicsItemGroup* ToGraphGroup();
+    QGraphicsItemGroup* ToGraphGroup(Camera &cam);
 
     // Selectable interface
 public:

@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QElapsedTimer>
 #include "point3.h"
+#include <qmath.h>
 
 Camera::Camera()
 
@@ -50,12 +51,12 @@ CustomGraphicsScene *Camera::CameraView()
 //        qDebug() << group;
         delete group;
     }
-//    for (auto i : extraItems) {
-//        auto group = i->DrawOnCameraView(*this);
+    for (auto i : extraItems) {
+        auto group = i->DrawOnCameraView(*this);
 //        for (auto j : group->childItems())
 //                gScene->addItem(j);
-//        delete group;
-//    }
+        delete group;
+    }
 //    qDebug() << "scene" << gScene->sceneRect();
 //    qDebug() << "image sceneRect" << sImage.rect << "orig" << sImage.image.rect();
 //    pm = gScene->addPixmap(QPixmap::fromImage(sImage.image.scaled(sImage.rect.width(),sImage.rect.height(),
@@ -88,6 +89,7 @@ MatrixF Camera::ProjectOnScreen(Object3D *obj)
 {
     return obj->MatrixTransform(plane.ProjectionMatrix(camPoint, camDist, addPerspective));
 }
+
 
 Ray Camera::CastRayFromPoint(QPointF point)
 {
@@ -123,7 +125,7 @@ void Camera::mousePress(Qt::MouseButton btn, QPointF pos)
     if (btn & Qt::MouseButton::LeftButton) {
         qDebug() << "Mouse press in space:" << plane.Point(pos.x(),pos.y());
         Ray ray = CastRayFromPoint(pos);
-//        extraItems << new Line3D(ray.pos, ray.GetPoint(1000));
+        extraItems << new Line3D(ray.pos, ray.GetPoint(1000));
         MousePress(ray);
     }
     if (btn & Qt::MouseButton::MidButton) {
@@ -183,8 +185,9 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
         float3 planeFrom = plane.Point(from.x(), from.y());
         float3 planeTo = plane.Point(to.x(), to.y());
 
-        camPoint = camPoint + (planeFrom - planeTo);
-        cam->pos = camPoint;
+//        camPoint = camPoint + (planeFrom - planeTo);
+//        cam->pos = camPoint;
+        sImage.rect.moveCenter(sImage.rect.center() + from - to);
 
         ViewChanged();
         return;
@@ -199,4 +202,102 @@ void Camera::mouseMove(Qt::MouseButtons btns, QPointF from, QPointF to)
 
         return;
     }
+}
+
+QPoint Camera::MapToImage(QPointF pointOnLabel)
+{
+    QPointF res = pointOnLabel - sImage.rect.topLeft();
+
+    return res.toPoint();
+}
+
+
+void Camera::labelMousePress(QMouseEvent *event)
+{
+    qDebug() << "label mouse press at" << event->pos() << "in geom" << sImage.viewRect
+             << "in plane" << sImage.MapToScene(event->pos()) << "in rect" << sImage.rect;
+    mousePress(event->button(), sImage.MapToScene(event->pos()));
+
+//    if (event->button() == Qt::MouseButton::RightButton) {
+        lastPos = event->pos();
+//    }
+}
+
+void Camera::labelMouseRelease(QMouseEvent *event)
+{
+    mouseRelease(event->button());
+}
+
+void Camera::labelMouseMove(QMouseEvent *event)
+{
+    mouseMove(event->buttons(), sImage.MapToScene(lastPos), sImage.MapToScene(event->pos()));
+    lastPos = event->pos();
+
+    QPointF delta = target_viewport_pos - event->pos();
+    if (qAbs(delta.x()) > 5 || qAbs(delta.y()) > 5) {
+        target_viewport_pos = event->pos();
+        target_scene_pos =  sImage.MapToScene(event->pos());
+    }
+}
+
+void Camera::labelWheel(QWheelEvent *event)
+{
+    qDebug() << "mouse wheel at" << event->pos() << "at scene" << sImage.MapToScene(event->pos()) << "on" << event->angleDelta().y();
+    double _zoom_factor_base = 1.0015;
+    if (event->orientation() == Qt::Vertical) {
+      double angle = event->angleDelta().y();
+      double factor = qPow(_zoom_factor_base, angle);
+      gentle_zoom(factor, event->pos());
+      ViewChanged();
+    }
+}
+
+void Camera::gentle_zoom(double factor, QPointF pos) {
+
+    QPointF target_scene_pos = sImage.MapToScene(pos.toPoint());
+//    QPointF target_viewport_pos = pos;
+
+    sImage.rect.setHeight(sImage.rect.height()*factor);
+    sImage.rect.setWidth(sImage.rect.width()*factor);
+//    sImage.rect.moveCenter(target_scene_pos);
+//    QPointF delta_viewport_pos = target_viewport_pos - sImage.viewRect.center();
+//    QPointF viewport_center = sImage.MapFromScene(target_scene_pos) - delta_viewport_pos;
+//    sImage.rect.moveCenter(sImage.MapToScene(viewport_center.toPoint()));
+
+    qDebug() << "image.rect after zoom" << sImage.rect << "center" << sImage.rect.center();
+
+//    _view->scale(factor, factor);
+//    _view->centerOn(target_scene_pos);
+//    QPointF delta_viewport_pos = target_viewport_pos - QPointF(_view->viewport()->width() / 2.0,
+//                                                               _view->viewport()->height() / 2.0);
+//    QPointF viewport_center = _view->mapFromScene(target_scene_pos) - delta_viewport_pos;
+//    _view->centerOn(_view->mapToScene(viewport_center.toPoint()));
+
+
+
+//    qDebug() << "Zoomed to" << _view->viewport()->rect() << "with center" << target_scene_pos << "rect" << _view->mapToScene(_view->viewport()->rect());
+
+//    QPolygonF polRect = _view->mapToScene(_view->viewport()->rect());
+
+//    emit zoomed();
+//    emit zoomedRect(QRectF(polRect.at(0), polRect.at(2)), _view->viewport()->rect());
+
+}
+
+void Camera::labelKeyPress(QKeyEvent *event)
+{
+
+}
+
+void Camera::labelKeyRelease(QKeyEvent *event)
+{
+
+}
+
+void Camera::labelResize(QResizeEvent *event)
+{
+    qDebug() << "resize to size" << event->size();
+    sImage.viewRect.setHeight( event->size().height());
+    sImage.viewRect.setWidth( event->size().width());
+    qDebug() << "viewRect after resize" << sImage.viewRect;
 }

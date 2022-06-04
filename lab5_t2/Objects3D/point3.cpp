@@ -56,17 +56,9 @@ QGraphicsItemGroup* Point3::DrawOnCameraView(Camera &cam)
 
     QGraphicsEllipseItem *el = new QGraphicsEllipseItem(nPoint.RectForPainter());
 
-    el->setPen(QColor(Qt::black));
-    el->setBrush(color);
+    cam.sImage.DrawSphere(nPoint.pos, 5, color);
 
-    el->setZValue(nPoint.pos.z + nPoint.rad );
-
-    QGraphicsItemGroup *group = new QGraphicsItemGroup();
-    group->addToGroup(el);
-
-    itemOnScene = group;
-
-    return group;
+    return new QGraphicsItemGroup();
 }
 
 MatrixF Point3::ToMatrix()

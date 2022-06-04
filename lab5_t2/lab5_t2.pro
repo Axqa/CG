@@ -29,6 +29,7 @@ SOURCES += \
     Objects3D/selectable.cpp \
     Objects3D/selectablepoint.cpp \
     customgraphicsscene.cpp \
+    imagelabel.cpp \
     main.cpp \
     mainwindow.cpp \
     mygraphicsview.cpp \
@@ -65,6 +66,7 @@ HEADERS += \
     Objects3D/selectablepoint.h \
     commondec.h \
     customgraphicsscene.h \
+    imagelabel.h \
     mainwindow.h \
     myassert.h \
     mygraphicsview.h \

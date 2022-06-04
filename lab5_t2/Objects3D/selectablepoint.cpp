@@ -79,7 +79,7 @@ QGraphicsItemGroup *SelectablePoint::DrawOnCameraView(Camera &cam)
 //    }
 
 
-    return nPoint.ToGraphGroup();
+    return nPoint.ToGraphGroup(cam);
 }
 
 MatrixF SelectablePoint::ToMatrix()
@@ -121,7 +121,7 @@ void SelectablePoint::Normalize()
 {
 }
 
-QGraphicsItemGroup *SelectablePoint::ToGraphGroup()
+QGraphicsItemGroup *SelectablePoint::ToGraphGroup(Camera &cam)
 {
     if (!visible) {
         return new QGraphicsItemGroup();
@@ -132,27 +132,32 @@ QGraphicsItemGroup *SelectablePoint::ToGraphGroup()
     el->setBrush(color);
     el->setZValue(pos.z + rad);
 
+    cam.sImage.DrawSphere(pos, rad, color);
+
     QGraphicsItemGroup *group = new QGraphicsItemGroup();
     itemOnScene = group;
 
     group->addToGroup(el);
 
     if (selected) {
-        QGraphicsEllipseItem *prX = new QGraphicsEllipseItem(projX.RectForPainter());
-        prX->setPen(QColor(Qt::black));
-        prX->setBrush(projColor);
-        prX->setZValue(projX.pos.z + projX.rad);
-        group->addToGroup(prX);
-        QGraphicsEllipseItem *prY = new QGraphicsEllipseItem(projY.RectForPainter());
-        prY->setPen(QColor(Qt::black));
-        prY->setBrush(projColor);
-        prY->setZValue(projY.pos.z + projY.rad);
-        group->addToGroup(prY);
-        QGraphicsEllipseItem *prZ = new QGraphicsEllipseItem(projZ.RectForPainter());
-        prZ->setPen(QColor(Qt::black));
-        prZ->setBrush(projColor);
-        prZ->setZValue(projZ.pos.z + projZ.rad);
-        group->addToGroup(prZ);
+//        QGraphicsEllipseItem *prX = new QGraphicsEllipseItem(projX.RectForPainter());
+//        prX->setPen(QColor(Qt::black));
+//        prX->setBrush(projColor);
+//        prX->setZValue(projX.pos.z + projX.rad);
+//        group->addToGroup(prX);
+        cam.sImage.DrawSphere(projX.pos, projX.rad, QColor(Qt::black));
+//        QGraphicsEllipseItem *prY = new QGraphicsEllipseItem(projY.RectForPainter());
+//        prY->setPen(QColor(Qt::black));
+//        prY->setBrush(projColor);
+//        prY->setZValue(projY.pos.z + projY.rad);
+//        group->addToGroup(prY);
+        cam.sImage.DrawSphere(projY.pos, projY.rad, QColor(Qt::black));
+//        QGraphicsEllipseItem *prZ = new QGraphicsEllipseItem(projZ.RectForPainter());
+//        prZ->setPen(QColor(Qt::black));
+//        prZ->setBrush(projColor);
+//        prZ->setZValue(projZ.pos.z + projZ.rad);
+//        group->addToGroup(prZ);
+        cam.sImage.DrawSphere(projZ.pos, projZ.rad, QColor(Qt::black));
 
         QList<Line3D*> lines ({
                                   new Line3D(pos,       projX.pos),
@@ -168,7 +173,8 @@ QGraphicsItemGroup *SelectablePoint::ToGraphGroup()
 
 
         for (auto i : lines) {
-            i->LineToSegments(i->p1, i->p2, 10, QPen(supColor, 1), group);
+//            i->LineToSegments(i->p1, i->p2, 10, QPen(supColor, 1), group);
+            cam.sImage.DrawLine(i->p1, i->p2, supColor, 1);
         }
         for (auto i : lines) {
             delete i;
@@ -189,7 +195,7 @@ bool SelectablePoint::isIntersects(const Ray &ray, float &dist)
 {
     if (!selected) {
         bool fl = ray.Distance(pos,dist) < rad;
-        qDebug() << "dist =" << dist;
+//        qDebug() << "dist =" << dist;
         return fl;
     }
 
@@ -221,10 +227,10 @@ bool SelectablePoint::isIntersects(const Ray &ray, float &dist)
     float sqdToZ = clToZ.DistanceSq(projZ.pos);
     vec.push_back({dToZ, sqdToZ, projZ.rad});
 
-    qDebug() << "Dist to cent" << sqdToC << "rad" <<rad     << "D:" << dToC;
-    qDebug() << "Dist to x" << sqdToX << "rad" << projX.rad<< "D:" << dToX;
-    qDebug() << "Dist to y" << sqdToY<< "rad" << projY.rad<< "D:" << dToY;
-    qDebug() << "Dist to z" << sqdToZ<< "rad" << projZ.rad<< "D:" << dToZ;
+//    qDebug() << "Dist to cent" << sqdToC << "rad" <<rad     << "D:" << dToC;
+//    qDebug() << "Dist to x" << sqdToX << "rad" << projX.rad<< "D:" << dToX;
+//    qDebug() << "Dist to y" << sqdToY<< "rad" << projY.rad<< "D:" << dToY;
+//    qDebug() << "Dist to z" << sqdToZ<< "rad" << projZ.rad<< "D:" << dToZ;
 
     std::sort(vec.begin(), vec.end(), [&](dists d1, dists d2) {return d1.rayD > d2.rayD;});
 
@@ -244,7 +250,7 @@ bool SelectablePoint::isIntersects(const Ray &ray, float &dist)
 
 void SelectablePoint::MovingRay(Ray &from, Ray &to)
 {
-    qDebug() << "move ray";
+//    qDebug() << "move ray";
     if (!selected)
         return;
     Ray ray = from;
