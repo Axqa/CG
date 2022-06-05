@@ -25,8 +25,8 @@ public:
     float *aValues = nullptr;
 
     // image resolution
-    int width = 640;
-    int height = 480;
+    int width = 900;
+    int height = 600;
 
     QColor bgColor = QColor(Qt::lightGray);
 
@@ -42,6 +42,9 @@ public:
     void PlotThickLine(int x0, int y0, float z0, int x1, int y1, float z1, QColor color, float thickness = 1);
     void PlotLine(int x0, int y0, float z0, int x1, int y1, float z1, QColor color);
     void PlotThickLine2(int x0, int y0, float z0, int x1, int y1, float z1, QColor color, float thickness = 1);
+
+    void DrawPolygon(std::vector<float3> p, QColor color);
+    void FillPolygon(std::vector<float3> p, QColor color);
 
     /// Map view coords to scene coords
     QPointF MapToScene(QPoint p);

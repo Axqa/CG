@@ -10,7 +10,7 @@ class Point3 : public Object3D
     Q_OBJECT
 public:
     float3 pos;
-    float rad=10;
+    float rad=6;
     QColor color = Qt::yellow;
 public:
     Point3();

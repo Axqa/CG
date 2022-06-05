@@ -27,13 +27,13 @@ QGraphicsItemGroup *Line3D::DrawOnCameraView(Camera &cam)
 
     cam.sImage.DrawLine(nLine.p1,nLine.p2,color);
 
-    float dx = p1.x - p2.x;
-    float dy = p1.y - p2.y;
-    int lineSegmCount =  Sqrt(dx*dx + dy*dy);
-    QGraphicsItemGroup *group = LineToSegments(nLine.p1, nLine.p2, 100, QPen(QColor(color),2));
+//    float dx = p1.x - p2.x;
+//    float dy = p1.y - p2.y;
+//    int lineSegmCount =  Sqrt(dx*dx + dy*dy);
+    QGraphicsItemGroup *group = new QGraphicsItemGroup();
 //    group->addToGroup(line);
 
-    itemOnScene = group;
+//    itemOnScene = group;
 
     return group;
 }

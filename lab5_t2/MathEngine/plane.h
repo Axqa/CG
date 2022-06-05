@@ -55,6 +55,20 @@ public:
         @see PointOnPlane(). */
     vec Point(float u, float v) const;
 
+    /// Returns the distance of this plane to the given object.
+    /** If the given object intersects or lies in this plane, then the returned distance is zero.
+        @note This function always returns a positive distance value, even when the given object lies on the negative side
+            of this plane. See the SignedDistance() function to produce a distance value that differentiates between the
+            front and back sides of this plane.
+        @see SignedDistance(), Intersects(), Contains(). */
+    float Distance(const vec &point) const;
+    /// Returns the signed distance of this plane to the given point.
+    /** If this function returns a negative value, the given point lies in the negative halfspace of this plane.
+        Conversely, if a positive value is returned, then the given point lies in the positive halfspace of this plane.
+        @see Distance(), IsOnPositiveSide(), AreOnSameSide(). */
+    float SignedDistance(const vec &point) const;
+
+
     /// Returns a point on this plane, parameterized at the given coordinates.
     /** The basis directions for U and V are arbitrarily (but consistently) defined.
         @param referenceOrigin A point that defines an origin for the returned points. This point does not have to lie
@@ -70,6 +84,9 @@ public:
     void Translate(const vec &offset);
 
     MatrixF ProjectionMatrix(float3 camPoint, float perspectiveDist, bool addPersp);
+
+    Plane &operator=(const Plane& p);
+
 
 private:
     MatrixF projMatrix;

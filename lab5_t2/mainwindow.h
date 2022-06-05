@@ -49,6 +49,10 @@ private slots:
 
     void on_checkBox_stateChanged(int arg1);
 
+    void on_checkBox_2_stateChanged(int arg1);
+
+    void on_checkBox_3_stateChanged(int arg1);
+
 signals:
     void SetN(int newN);
     void SetM(int newM);
@@ -56,6 +60,8 @@ signals:
     void YSlider(int value);
     void ZSlider(int value);
     void SetShowControlLines(bool state);
+    void SetShowCurveLines(bool state);
+    void SetShowControlPoints(bool state);
 
 private:
     int prevDeg = 0;

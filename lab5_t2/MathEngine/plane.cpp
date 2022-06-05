@@ -58,6 +58,18 @@ vec Plane::Point(float u, float v) const
     return res;
 }
 
+float Plane::Distance(const vec &point) const
+{
+    return Abs(SignedDistance(point));
+}
+
+float Plane::SignedDistance(const vec &point) const
+{
+    assert(normal.IsNormalized());
+    assert(normal.Length());
+
+    return normal.Dot(point) - d;
+}
 
 void Plane::Translate(const vec &offset)
 {
@@ -71,6 +83,14 @@ MatrixF Plane::ProjectionMatrix(float3 camPoint, float perspectiveDist, bool add
 
     CalculateProjMatrix(camPoint, perspectiveDist, addPersp);
     return projMatrix;
+}
+
+Plane &Plane::operator=(const Plane &p)
+{
+    normal = p.normal;
+    d = p.d;
+
+    return *this;
 }
 
 void Plane::CalculateProjMatrix(float3 camPoint, float perspectiveDist, bool addPersp)

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Graphics_view_zoom.h"
+#include <QElapsedTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -63,7 +64,8 @@ void MainWindow::initConnections()
 void MainWindow::UpdateView()
 {
 //    ui->graphicsView->viewport()->removeEventFilter(ui->graphicsView->scene());
-
+    QElapsedTimer t;
+    t.start();
     if (ui->graphicsView->scene())
         ui->graphicsView->scene()->deleteLater();
     auto scene = (mainCam->CameraView());
@@ -92,6 +94,8 @@ void MainWindow::UpdateView()
 //    qDebug() << "View update";
     ui->imageLabel->update();
     ui->graphicsView->update();
+
+    ui->fpsLbl->setText(QString::number( t.elapsed()));
 //    ui->graphicsView->viewport()->installEventFilter(scene);
 }
 
@@ -219,3 +223,15 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 //    mainCam->sImage.viewRect = ui->graphicsView->viewport()->rect();
     UpdateView();
 }
+
+void MainWindow::on_checkBox_2_stateChanged(int arg1)
+{
+    SetShowCurveLines(arg1);
+}
+
+
+void MainWindow::on_checkBox_3_stateChanged(int arg1)
+{
+    SetShowControlPoints(arg1);
+}
+

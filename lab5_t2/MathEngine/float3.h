@@ -214,6 +214,17 @@ public:
         @return float3(y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x).*/
     float3 Cross(const float3 &v) const;
 
+    /// Projects this vector onto the given unnormalized direction vector.
+    /** @param direction The direction vector to project this vector onto. This function will normalize this
+            vector, so you can pass in an unnormalized vector.
+        @see ProjectToNorm(). */
+    float3 ProjectTo(const float3 &direction) const;
+
+    /// Projects this vector onto the given normalized direction vector.
+    /** @param direction The vector to project onto. This vector must be normalized.
+        @see ProjectTo(). */
+    float3 ProjectToNorm(const float3 &direction) const;
+
     /// Returns the angle between this vector and the specified vector, in radians.
     /** @note This function takes into account that this vector or the other vector can be unnormalized, and normalizes the computations.
             If you are computing the angle between two normalized vectors, it is better to use AngleBetweenNorm().
@@ -267,6 +278,15 @@ public:
         @note When calling this function, this vector should not be zero! */
     void PerpendicularBasis(float3 &outB, float3 &outC) const;
 
+    /// Computes a new normalized direction vector that is perpendicular to this vector and the specified hint vector.
+    /** If this vector points toward the hint vector, the vector hint2 is returned instead.
+        @see AnotherPerpendicular(), Cross(). */
+    float3 Perpendicular(const float3 &hint = float3(0,1,0), const float3 &hint2 = float3(0,0,1)) const;
+
+    /// Returns another vector that is perpendicular to this vector and the vector returned by Perpendicular().
+    /** The set (this, Perpendicular(), AnotherPerpendicular()) forms a right-handed normalized 3D basis.
+        @see Perpendicular(), Cross(). */
+    float3 AnotherPerpendicular(const float3 &hint = float3(0,1,0), const float3 &hint2 = float3(0,0,1)) const;
 
     /// Sets all elements of this vector.
     void Set(float x, float y, float z);

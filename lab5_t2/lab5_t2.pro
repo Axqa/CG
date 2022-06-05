@@ -25,6 +25,7 @@ SOURCES += \
     Objects3D/object3d.cpp \
     Objects3D/objectgroup.cpp \
     Objects3D/point3.cpp \
+    Objects3D/polygon3d.cpp \
     Objects3D/scene3d.cpp \
     Objects3D/selectable.cpp \
     Objects3D/selectablepoint.cpp \
@@ -61,6 +62,7 @@ HEADERS += \
     Objects3D/object3d.h \
     Objects3D/objectgroup.h \
     Objects3D/point3.h \
+    Objects3D/polygon3d.h \
     Objects3D/scene3d.h \
     Objects3D/selectable.h \
     Objects3D/selectablepoint.h \

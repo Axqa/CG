@@ -68,6 +68,18 @@ float3 float3::Cross(const float3 &rhs) const
                   x * rhs.y - y * rhs.x);
 }
 
+float3 float3::ProjectTo(const float3 &direction) const
+{
+    assert(!direction.IsZero());
+    return direction * this->Dot(direction) / direction.LengthSq();
+}
+
+float3 float3::ProjectToNorm(const float3 &direction) const
+{
+    Q_ASSERT(direction.IsNormalized());
+    return direction * this->Dot(direction);
+}
+
 float float3::AngleBetween(const float3 &other) const
 {
     float cosa = Dot(other) / Sqrt(LengthSq() * other.LengthSq());
@@ -302,6 +314,29 @@ void float3::PerpendicularBasis(float3 &outB, float3 &outC) const
     float3 yLike (0,1,0);
     outB = yLike.Cross(*this).Normalized();
     outC = Cross(outB).Normalized();
+}
+
+float3 float3::Perpendicular(const float3 &hint, const float3 &hint2) const
+{
+    assert(!this->IsZero());
+    assert(hint.IsNormalized());
+    assert(hint2.IsNormalized());
+    float3 v = this->Cross(hint);
+    float len = v.Normalize();
+    if (len == 0)
+        return hint2;
+    else
+        return v;
+}
+
+float3 float3::AnotherPerpendicular(const float3 &hint, const float3 &hint2) const
+{
+    assert(!this->IsZero());
+    assert(hint.IsNormalized());
+    assert(hint2.IsNormalized());
+    float3 firstPerpendicular = Perpendicular(hint, hint2);
+    float3 v = this->Cross(firstPerpendicular);
+    return v.Normalized();
 }
 
 void float3::Set(float x, float y, float z)

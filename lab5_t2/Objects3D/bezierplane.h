@@ -12,6 +12,8 @@ public:
     int m = 3; // col deg
 
     bool showControlLines = true;
+    bool showCurveLines = true;
+    bool showControlPoints = true;
 
     int nSub = 25;
     int mSub = 25;
@@ -36,6 +38,8 @@ public slots:
     void RotateZDeg(int value);
 
     void SetShowLines(bool state);
+    void SetShowCurveLines(bool state);
+    void SetShowControlPoints(bool state);
 
     void NeedRecalc();
 

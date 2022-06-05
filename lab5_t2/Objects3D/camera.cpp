@@ -125,7 +125,7 @@ void Camera::mousePress(Qt::MouseButton btn, QPointF pos)
     if (btn & Qt::MouseButton::LeftButton) {
         qDebug() << "Mouse press in space:" << plane.Point(pos.x(),pos.y());
         Ray ray = CastRayFromPoint(pos);
-        extraItems << new Line3D(ray.pos, ray.GetPoint(1000));
+//        extraItems << new Line3D(ray.pos, ray.GetPoint(1000));
         MousePress(ray);
     }
     if (btn & Qt::MouseButton::MidButton) {
@@ -259,10 +259,10 @@ void Camera::gentle_zoom(double factor, QPointF pos) {
 
     sImage.rect.setHeight(sImage.rect.height()*factor);
     sImage.rect.setWidth(sImage.rect.width()*factor);
-//    sImage.rect.moveCenter(target_scene_pos);
-//    QPointF delta_viewport_pos = target_viewport_pos - sImage.viewRect.center();
-//    QPointF viewport_center = sImage.MapFromScene(target_scene_pos) - delta_viewport_pos;
-//    sImage.rect.moveCenter(sImage.MapToScene(viewport_center.toPoint()));
+    sImage.rect.moveCenter(target_scene_pos);
+    QPointF delta_viewport_pos = target_viewport_pos - sImage.viewRect.center();
+    QPointF viewport_center = sImage.MapFromScene(target_scene_pos) - delta_viewport_pos;
+    sImage.rect.moveCenter(sImage.MapToScene(viewport_center.toPoint()));
 
     qDebug() << "image.rect after zoom" << sImage.rect << "center" << sImage.rect.center();
 

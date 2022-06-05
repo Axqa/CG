@@ -185,19 +185,58 @@ void SceneImage::PlotLine(int x0, int y0, float z0, int x1, int y1, float z1, QC
 {
     /// doesn't work :(
 
-   int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
-   int dy =  abs(y1-y0), sy = y0<y1 ? 1 : -1;
-   int err = dx+dy, e2; /* error value e_xy */
-   float dz = dx+dy == 0 ? 0 : (z1-z0) / (dx+dy);
+//   int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
+//   int dy =  abs(y1-y0), sy = y0<y1 ? 1 : -1;
+//   int err = dx+dy, e2; /* error value e_xy */
+    //   float dz = dx+dy == 0 ? 0 : (z1-z0) / (dx+dy);
 
-   for(;;){  /* loop */
-      PutPixel(x0,y0,color,z0);
-      if (x0==x1 && y0==y1) break;
-      e2 = 2*err;
-      if (e2 >= dy) { err += dy; x0 += sx; z0+=dz; } /* e_xy+e_x > 0 */
-      if (e2 >= dx) { err += dx; y0 += sy; z0+=dz; } /* e_xy+e_y < 0 */
-   }
+    int y2 = y1; y1 = y0;
+    int x2 = x1; x1 = x0;
 
+    // Bresenham's line algorithm
+    const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+    if(steep)
+    {
+        std::swap(x1, y1);
+        std::swap(x2, y2);
+    }
+
+    if(x1 > x2)
+    {
+        std::swap(x1, x2);
+        std::swap(y1, y2);
+    }
+
+    const float dx = x2 - x1;
+    const float dy = fabs(y2 - y1);
+
+    float dz = dx+dy == 0 ? 0 : (z1-z0) / (dx+dy);
+
+    float error = dx / 2.0f;
+    const int ystep = (y1 < y2) ? 1 : -1;
+    int y = (int)y1;
+
+    const int maxX = (int)x2;
+
+    for(int x=(int)x1; x<=maxX; x++, z0+=dz)
+    {
+        if(steep)
+        {
+            PutPixel(y,x, color, z0);
+        }
+        else
+        {
+            PutPixel(x,y, color, z0);
+        }
+
+        error -= dy;
+        if(error < 0)
+        {
+            y += ystep;
+            error += dx;
+            z0 += dz;
+        }
+    }
 }
 
 void SceneImage::PlotThickLine2(int x0, int y0, float z0, int x1, int y1, float z1, QColor color, float thickness)
@@ -213,6 +252,93 @@ void SceneImage::PlotThickLine2(int x0, int y0, float z0, int x1, int y1, float 
         vec.ScaleToLength(w/i);
         PlotLineAA(x0 + vec.x, y0 + vec.y, z0, x1 + vec.x, y1+vec.y, z1, color);
         PlotLineAA(x0 - vec.x, y0 - vec.y, z0, x1 - vec.x, y1-vec.y, z1, color);
+    }
+}
+
+/// func doesn't clip or translate lines
+void SceneImage::DrawPolygon(std::vector<float3> p, QColor color)
+{
+    for (u32 i = 0; i < p.size(); ++i) {
+
+        DrawLine(p[i], p[(i+1)%p.size()], color,1);
+    }
+}
+
+void SceneImage::FillPolygon(std::vector<float3> p, QColor color)
+{
+    DrawPolygon(p, color);
+    struct line {
+        vec p0, p1;
+    };
+    struct pointInt {
+        int x,y;
+        float z;
+    };
+    struct lineInt {
+        int x0,y0,x1,y1;
+        float z0,z1;
+        pointInt pointByY(int y) {
+            pointInt p;
+            p.y = y;
+            p.x = ((y-y0) / (float)(y1-y0)) * (x1-x0) + x0;
+            p.z = ((y-y0) / (float)(y1-y0)) * (z1-z0) + z0;
+            return p;
+        }
+    };
+
+    std::list<line> lines;
+    std::list<lineInt> lfa;
+
+    for (u32 i = 0; i < p.size(); ++i) {
+        line l{p[i], p[(i+1)%p.size()]};
+//        if (l.p0.y == l.p1.y) continue;
+        if (l.p0.y < l.p1.y) {
+            std::swap(l.p0, l.p1);
+        }
+        lines.push_back(l);
+    }
+
+//    std::sort(lines.begin(), lines.end(), [](line l0, line l1){
+//        return l0.p0.y >  l1.p0.y;
+//    });
+
+    float2 lt = float2(rect.left(), rect.top());
+    float2 rb = float2(rect.right(), rect.bottom());
+
+//    qDebug() << "clipping" << p1 << p2 << "in rect" << lt << rb;
+
+    int minY = height, maxY=-1;
+    for (auto l : lines) {
+//        qDebug() << "success clipping" << p1 << p2;
+        lineInt li;
+             li.x0 = (l.p0.x - lt.x) / rect.width() * this->width,
+             li.x1 = (l.p1.x - lt.x) / rect.width() * this->width,
+             li.y0 = -(l.p0.y- rb.y) / rect.height() * this->height,
+             li.y1 = -(l.p1.y- rb.y) / rect.height() * this->height;
+        li.z0 = l.p0.z; li.z1 = l.p1.z;
+        if (li.y0 == li.y1) continue;
+        minY = __min(minY, li.y0);
+        maxY = __max(maxY, li.y1);
+
+        lfa.push_back(li);
+    }
+
+    QVector <pointInt> ip;
+    for (int y = minY; y < maxY; ++y) {
+        ip.clear();
+        for (auto l : lfa) {
+            if (y >= l.y0 && y <= l.y1) {
+                pointInt cp = l.pointByY(y);
+                ip.push_back(cp);
+            }
+        }
+        if (ip.size() > 1) {
+            for (int i = 0; i < ip.size()-1; i+=2) {
+//                qDebug() << ip[i].x << ip[i].y << ":" << ip[i+1].x << ip[i+1].y;
+//                PlotLine(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color);
+                PlotLineWidth(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color,1.1);
+            }
+        }
     }
 }
 
@@ -344,10 +470,10 @@ void SceneImage::PutPixel(int x, int y, QColor col, float z)
 /// @todo maybe change it
 QPointF SceneImage::MapToScene(QPoint p)
 {
-//    qDebug() << "mapping" << p << "from view" << viewRect << "to plane rect" << rect << "with top" << rect.top();
     QPointF res;
     res.setX(p.x() / (float)viewRect.width() * rect.width() + rect.left());
-    res.setY(-(p.y() / (float)viewRect.height() * rect.height() + rect.top()));
+    res.setY((1-p.y() / (float)viewRect.height()) * rect.height() + rect.top());
+//    qDebug() << "mapping" << p << "from view" << viewRect << "to plane rect" << rect << "with top" << rect.top() << "as" << res;
 
     return res;
 }
@@ -357,7 +483,7 @@ QPointF SceneImage::MapFromScene(QPointF p)
     QPointF res;
 
     res.setX((p.x() - rect.left()) / rect.width() * viewRect.width());
-    res.setY((-p.y()- rect.top()) / rect.height() * viewRect.height());
+    res.setY(-((p.y()- rect.top()) / rect.height()-1) * viewRect.height());
 
 //    qDebug() << "Map" << p << "from scene" << rect << "in" << res << "for view" << viewRect;
 
