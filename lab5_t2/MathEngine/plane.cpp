@@ -42,6 +42,11 @@ void Plane::ReverseNormal()
     d = -d;
 }
 
+bool Plane::IsOnPositiveSide(const vec &point) const
+{
+    return SignedDistance(point) >= 0.f;
+}
+
 vec Plane::PointOnPlane() const
 {
     return normal * d;

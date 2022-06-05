@@ -15,10 +15,10 @@ public:
     int NumVertex();
 
     void SetColor(QColor col);
-    QColor GetColor();
+    QColor GetColor(vec p = vec());
 
     void AddPoint(vec p);
-    QColor NormToColor();
+    QColor NormToColor(vec p = vec());
     void RecalcCenter();
     void RecalcPlane();
 

@@ -43,6 +43,14 @@ public:
         @see normal, d. */
     void ReverseNormal();
 
+    /// Tests if the given point lies on the positive side of this plane.
+    /** A plane divides the space in three sets: the negative halfspace, the plane itself, and the positive halfspace.
+        The normal vector of the plane points towards the positive halfspace.
+        @return This function returns true if the given point lies either on this plane itself, or in the positive
+            halfspace of this plane.
+        @see IsInPositiveDirection, AreOnSameSide(), Distance(), SignedDistance(). */
+    bool IsOnPositiveSide(const vec &point) const;
+
     /// Returns a point on this plane.
     /** @note This point has the special property that the line passing through the vector space origin (0,0,0)
             and the returned point is perpendicular to this plane (directed towards the normal vector of this plane).

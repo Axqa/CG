@@ -16,8 +16,8 @@ BezierPlane::BezierPlane()
             connect(controlPoints[i][j], &SelectablePoint::ObjectChanged, this, &BezierPlane::ObjectChanged);
         }
     }
-    nSub = 25;
-    mSub = 25;
+    nSub = (n+1) * 10;
+    mSub = (m+1) * 10;
 }
 
 BezierPlane::BezierPlane(int n, int m)
@@ -32,8 +32,8 @@ BezierPlane::BezierPlane(int n, int m)
         }
     }
 
-    nSub = 25;
-    mSub = 25;
+    nSub = (n+1) * 10;
+    mSub = (m+1) * 10;
 
 }
 
@@ -59,8 +59,8 @@ void BezierPlane::RecalcPoints()
         for (int i = 0; i < nSub; ++i) {
             delete[] surfPoints[i];
         }
+        delete[] surfPoints;
     }
-    delete[] surfPoints;
 
     surfPoints = new float3*[nSub];
     for (int i = 0; i < nSub; ++i) {
@@ -126,6 +126,14 @@ void BezierPlane::RecalcPoints()
 
 void BezierPlane::setN(int newN)
 {
+    if (surfPoints) {
+        for (int i = 0; i < nSub; ++i) {
+            delete[] surfPoints[i];
+        }
+    }
+    delete[] surfPoints;
+    surfPoints = nullptr;
+
     controlPoints.resize(newN+1);
     if (newN > n) {
         for (int i = n+1; i < newN+1; ++i) {
@@ -283,15 +291,20 @@ QGraphicsItemGroup *BezierPlane::DrawOnCameraView(Camera &cam)
         }
     }
 
+    RecalcPoints();
     for (int i = 0; i < p.nSub-1; ++i) {
         for (int j = 0; j < p.mSub-1; ++j) {
+            Polygon3D sup1({surfPoints[i][j], surfPoints[i+1][j], surfPoints[i+1][j+1]});
             Polygon3D pol1({p.surfPoints[i][j], p.surfPoints[i+1][j], p.surfPoints[i+1][j+1]});
+            pol1.SetColor(sup1.GetColor(cam.plane.normal*10000));
             pol1.DrawWithoutTransform(cam);
+            Polygon3D sup2({ surfPoints[i+1][j+1],  surfPoints[i][j+1], surfPoints[i][j]});
             Polygon3D pol2({ p.surfPoints[i+1][j+1],  p.surfPoints[i][j+1], p.surfPoints[i][j]});
+            pol2.SetColor(sup2.GetColor(cam.plane.normal*10000));
             pol2.DrawWithoutTransform(cam);
         }
     }
-//    RecalcPoints();
+
 //    for (int i = 0; i < nSub-1; ++i) {
 //        for (int j = 0; j < mSub-1; ++j) {
 //            Polygon3D pol1({surfPoints[i][j], surfPoints[i+1][j], surfPoints[i+1][j+1]});

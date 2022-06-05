@@ -35,10 +35,10 @@ void Polygon3D::SetColor(QColor col)
     calcColor = false;
 }
 
-QColor Polygon3D::GetColor()
+QColor Polygon3D::GetColor(vec p)
 {
     if (calcColor) {
-        return NormToColor();
+        return NormToColor(p);
     } else {
         return color;
     }
@@ -60,13 +60,20 @@ void Polygon3D::AddPoint(vec p)
 
 }
 
-QColor Polygon3D::NormToColor()
+QColor Polygon3D::NormToColor(vec p)
 {
+    int s = 1;
+    if (!p.IsZero()) {
+        if (plane.IsOnPositiveSide(p)) {
+            s = -1;
+        }
+    }
+
     QColor col;
 
-    int r = 127 + plane.normal.y * 127;
-    int g = 127 + plane.normal.x * 127;
-    int b = 127 + plane.normal.z * 127;
+    int r = 127 + s*plane.normal.y * 127;
+    int g = 127 + s*plane.normal.x * 127;
+    int b = 127 + s*plane.normal.z * 127;
 
     col.setRgb(r,g,b, 127);
 //    qDebug() << "norm color" << col << "from" << plane.normal;
