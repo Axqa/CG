@@ -51,12 +51,12 @@ CustomGraphicsScene *Camera::CameraView()
 //        qDebug() << group;
         delete group;
     }
-//    for (auto i : extraItems) {
-//        auto group = i->DrawOnCameraView(*this);
-////        for (auto j : group->childItems())
-////                gScene->addItem(j);
-//        delete group;
-//    }
+    for (auto i : extraItems) {
+        auto group = i->DrawOnCameraView(*this);
+//        for (auto j : group->childItems())
+//                gScene->addItem(j);
+        delete group;
+    }
 //    qDebug() << "scene" << gScene->sceneRect();
 //    qDebug() << "image sceneRect" << sImage.rect << "orig" << sImage.image.rect();
 //    pm = gScene->addPixmap(QPixmap::fromImage(sImage.image.scaled(sImage.rect.width(),sImage.rect.height(),

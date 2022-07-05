@@ -8,7 +8,6 @@
 BezierPlane::BezierPlane()
     : m(2), n(2)
 {
-    qDebug() << "Bezier ctor";
     controlPoints.resize(n+1);
     for (int i = 0; i < n+1;++i ) {
         controlPoints[i] = QVector<SelectablePoint*>(m+1);
@@ -297,30 +296,19 @@ QGraphicsItemGroup *BezierPlane::DrawOnCameraView(Camera &cam)
         for (int j = 0; j < p.mSub-1; ++j) {
             Polygon3D sup1({surfPoints[i][j], surfPoints[i+1][j], surfPoints[i+1][j+1]});
             Polygon3D pol1({p.surfPoints[i][j], p.surfPoints[i+1][j], p.surfPoints[i+1][j+1]});
-            pol1.SetColor(sup1.GetColor(cam.plane.normal*10000));
+            pol1.SetColor(sup1.GetColor(cam));
             pol1.DrawWithoutTransform(cam);
             Polygon3D sup2({ surfPoints[i+1][j+1],  surfPoints[i][j+1], surfPoints[i][j]});
             Polygon3D pol2({ p.surfPoints[i+1][j+1],  p.surfPoints[i][j+1], p.surfPoints[i][j]});
-            pol2.SetColor(sup2.GetColor(cam.plane.normal*10000));
+            pol2.SetColor(sup2.GetColor(cam));
             pol2.DrawWithoutTransform(cam);
         }
     }
-
-//    for (int i = 0; i < nSub-1; ++i) {
-//        for (int j = 0; j < mSub-1; ++j) {
-//            Polygon3D pol1({surfPoints[i][j], surfPoints[i+1][j], surfPoints[i+1][j+1]});
-//            pol1.DrawOnCameraView(cam);
-//            Polygon3D pol2({ surfPoints[i+1][j+1],  surfPoints[i][j+1], surfPoints[i][j]});
-//            pol2.DrawOnCameraView(cam);
-//        }
-//    }
-
     return group;
 }
 
 MatrixF BezierPlane::ToMatrix()
 {
-//    qDebug() << "BezierPlane::ToMatrix";
     MatrixF res;
     for (auto row : controlPoints) {
         for (auto el : row) {
