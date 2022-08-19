@@ -1,4 +1,7 @@
 #include "sceneimage.h"
+#include "thread"
+#include <omp.h>
+#include "globals.h"
 
 SceneImage::SceneImage(QObject *parent) : QObject(parent)
 {
@@ -264,6 +267,10 @@ void SceneImage::DrawPolygon(std::vector<float3> p, QColor color)
     }
 }
 
+void ThreadablePlotLineWidth(SceneImage *si, int x0, int y0, float z0, int x1, int y1, float z1, QColor col, float wd) {
+    si->PlotLineWidth( x0,  y0,  z0,  x1,  y1,  z1,  col,  wd);
+}
+
 void SceneImage::FillPolygon(std::vector<float3> p, QColor color)
 {
     DrawPolygon(p, color);
@@ -323,23 +330,54 @@ void SceneImage::FillPolygon(std::vector<float3> p, QColor color)
         lfa.push_back(li);
     }
 
-    QVector <pointInt> ip;
-    for (int y = minY; y < maxY; ++y) {
-        ip.clear();
-        for (auto l : lfa) {
-            if (y >= l.y0 && y <= l.y1) {
-                pointInt cp = l.pointByY(y);
-                ip.push_back(cp);
+
+//    std::vector<std::thread> threads;
+//    void (SceneImage::*func)(int, int , float , int , int , float , QColor , float );
+//    threads.reserve(10000);
+
+    if (useMultithreading) {
+//        #pragma omp parallel for num_threads(4)
+        for (int y = minY; y < maxY; ++y) {
+            QVector <pointInt> ip;
+            for (auto l : lfa) {
+                if (y >= l.y0 && y <= l.y1) {
+                    pointInt cp = l.pointByY(y);
+                    ip.push_back(cp);
+                }
+            }
+            if (ip.size() > 1) {
+                for (int i = 0; i < ip.size()-1; i+=2) {
+        //                qDebug() << ip[i].x << ip[i].y << ":" << ip[i+1].x << ip[i+1].y;
+        //                PlotLine(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color);
+        //                threads.push_back(std::thread(ThreadablePlotLineWidth, this, ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color,1.1));
+                    PlotLineWidth(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color,1.1);
+                }
             }
         }
-        if (ip.size() > 1) {
-            for (int i = 0; i < ip.size()-1; i+=2) {
-//                qDebug() << ip[i].x << ip[i].y << ":" << ip[i+1].x << ip[i+1].y;
-//                PlotLine(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color);
-                PlotLineWidth(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color,1.1);
+    } else {
+        for (int y = minY; y < maxY; ++y) {
+            QVector <pointInt> ip;
+            for (auto l : lfa) {
+                if (y >= l.y0 && y <= l.y1) {
+                    pointInt cp = l.pointByY(y);
+                    ip.push_back(cp);
+                }
+            }
+            if (ip.size() > 1) {
+                for (int i = 0; i < ip.size()-1; i+=2) {
+        //                qDebug() << ip[i].x << ip[i].y << ":" << ip[i+1].x << ip[i+1].y;
+        //                PlotLine(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color);
+        //                threads.push_back(std::thread(ThreadablePlotLineWidth, this, ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color,1.1));
+                    PlotLineWidth(ip[i].x,ip[i].y,ip[i].z,ip[i+1].x,ip[i+1].y,ip[i+1].z,color,1.1);
+                }
             }
         }
     }
+
+
+//    for (u32 i = 0; i < threads.size(); ++i) {
+//        threads[i].join();
+//    }
 }
 
 // Defining region codes

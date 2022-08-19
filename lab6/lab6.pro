@@ -33,6 +33,7 @@ SOURCES += \
     Objects3D/selectable.cpp \
     Objects3D/selectablepoint.cpp \
     customgraphicsscene.cpp \
+    globals.cpp \
     imagelabel.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     Objects3D/selectablepoint.h \
     commondec.h \
     customgraphicsscene.h \
+    globals.h \
     imagelabel.h \
     mainwindow.h \
     myassert.h \
@@ -96,3 +98,6 @@ RESOURCES += \
 DISTFILES += \
     .gitignore \
     style.qss
+
+QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_LFLAGS +=  -fopenmp

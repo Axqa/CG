@@ -51,6 +51,7 @@ int main( int argc, char **argv ) {
     QObject::connect(&w, &MainWindow::SetShowControlLines, bPlane, &BezierPlane::SetShowLines);
     QObject::connect(&w, &MainWindow::SetShowControlPoints, bPlane, &BezierPlane::SetShowControlPoints);
     QObject::connect(&w, &MainWindow::SetShowCurveLines, bPlane, &BezierPlane::SetShowCurveLines);
+//    QObject::connect(&w, &MainWindow::SetMultithreading, bPlane, &BezierPlane::SetUseMultithreading);
 
 //    scene->addObject(new Polygon3D({vec(0,0,0), vec(0,100,0), vec(0,100,100), vec(0,0,100)}));
 

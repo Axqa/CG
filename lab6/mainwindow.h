@@ -53,6 +53,8 @@ private slots:
 
     void on_checkBox_3_stateChanged(int arg1);
 
+    void on_checkBox_4_stateChanged(int arg1);
+
 signals:
     void SetN(int newN);
     void SetM(int newM);
@@ -62,6 +64,7 @@ signals:
     void SetShowControlLines(bool state);
     void SetShowCurveLines(bool state);
     void SetShowControlPoints(bool state);
+    void SetMultithreading(bool state);
 
 private:
     int prevDeg = 0;

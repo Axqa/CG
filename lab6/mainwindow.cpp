@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "Graphics_view_zoom.h"
 #include <QElapsedTimer>
+#include "globals.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -233,5 +234,12 @@ void MainWindow::on_checkBox_2_stateChanged(int arg1)
 void MainWindow::on_checkBox_3_stateChanged(int arg1)
 {
     SetShowControlPoints(arg1);
+}
+
+
+void MainWindow::on_checkBox_4_stateChanged(int arg1)
+{
+//    SetMultithreading(arg1);
+    useMultithreading = arg1;
 }
 

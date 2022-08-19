@@ -4,6 +4,7 @@
 #include "../MathEngine/somemath.h"
 #include "line3d.h"
 #include "polygon3d.h"
+#include "../globals.h"
 
 BezierPlane::BezierPlane()
     : m(2), n(2)
@@ -202,6 +203,7 @@ void BezierPlane::SetShowControlPoints(bool state)
     ObjectChanged();
 }
 
+
 void BezierPlane::NeedRecalc()
 {
 
@@ -292,17 +294,35 @@ QGraphicsItemGroup *BezierPlane::DrawOnCameraView(Camera &cam)
     }
 
     RecalcPoints();
-    for (int i = 0; i < p.nSub-1; ++i) {
-        for (int j = 0; j < p.mSub-1; ++j) {
-            Polygon3D sup1({surfPoints[i][j], surfPoints[i+1][j], surfPoints[i+1][j+1]});
-            Polygon3D pol1({p.surfPoints[i][j], p.surfPoints[i+1][j], p.surfPoints[i+1][j+1]});
-            pol1.SetColor(sup1.GetColor(cam));
-            pol1.DrawWithoutTransform(cam);
-            Polygon3D sup2({ surfPoints[i+1][j+1],  surfPoints[i][j+1], surfPoints[i][j]});
-            Polygon3D pol2({ p.surfPoints[i+1][j+1],  p.surfPoints[i][j+1], p.surfPoints[i][j]});
-            pol2.SetColor(sup2.GetColor(cam));
-            pol2.DrawWithoutTransform(cam);
+
+    if (useMultithreading) {
+        #pragma omp parallel for num_threads(4) schedule(static)
+        for (int i = 0; i < p.nSub-1; ++i) {
+            for (int j = 0; j < p.mSub-1; ++j) {
+                Polygon3D sup1({surfPoints[i][j], surfPoints[i+1][j], surfPoints[i+1][j+1]});
+                Polygon3D pol1({p.surfPoints[i][j], p.surfPoints[i+1][j], p.surfPoints[i+1][j+1]});
+                pol1.SetColor(sup1.GetColor(cam));
+                pol1.DrawWithoutTransform(cam);
+                Polygon3D sup2({ surfPoints[i+1][j+1],  surfPoints[i][j+1], surfPoints[i][j]});
+                Polygon3D pol2({ p.surfPoints[i+1][j+1],  p.surfPoints[i][j+1], p.surfPoints[i][j]});
+                pol2.SetColor(sup2.GetColor(cam));
+                pol2.DrawWithoutTransform(cam);
+            }
         }
+    } else {
+        for (int i = 0; i < p.nSub-1; ++i) {
+            for (int j = 0; j < p.mSub-1; ++j) {
+                Polygon3D sup1({surfPoints[i][j], surfPoints[i+1][j], surfPoints[i+1][j+1]});
+                Polygon3D pol1({p.surfPoints[i][j], p.surfPoints[i+1][j], p.surfPoints[i+1][j+1]});
+                pol1.SetColor(sup1.GetColor(cam));
+                pol1.DrawWithoutTransform(cam);
+                Polygon3D sup2({ surfPoints[i+1][j+1],  surfPoints[i][j+1], surfPoints[i][j]});
+                Polygon3D pol2({ p.surfPoints[i+1][j+1],  p.surfPoints[i][j+1], p.surfPoints[i][j]});
+                pol2.SetColor(sup2.GetColor(cam));
+                pol2.DrawWithoutTransform(cam);
+            }
+        }
+
     }
     return group;
 }

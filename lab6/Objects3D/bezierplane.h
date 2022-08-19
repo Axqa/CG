@@ -14,6 +14,7 @@ public:
     bool showControlLines = true;
     bool showCurveLines = true;
     bool showControlPoints = true;
+//    bool useMultithreading = false;
 
     int nSub = 25;
     int mSub = 25;
@@ -40,6 +41,7 @@ public slots:
     void SetShowLines(bool state);
     void SetShowCurveLines(bool state);
     void SetShowControlPoints(bool state);
+//    void SetUseMultithreading(bool state);
 
     void NeedRecalc();
 
